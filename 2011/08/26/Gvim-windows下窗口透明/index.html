@@ -1,0 +1,438 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="baidu_union_verify" content="d1952c66cf48912e21c18c7c581f382a">
+  <meta name="360-site-verification" content="67fbcc5a67f4c65c057315b28fa0b2c8" />
+<meta name="google-site-verification" content="2GzxQ0VtXwTSUdmGm6DzcmhTzM_I9QmzCb_pzpMzD88" />
+  
+    <title>Gvim windows下窗口透明 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="[object Object]">
+    
+    <meta name="description" content="来源于：http://hi.baidu.com/idea_star_/blog/item/6133ac0df7acf93c6a60fb7c.html
+在linux下可以实现窗口透明，最近在windows下折腾vim，一直想尝试将窗口设置为透明。于是google之，找到了vimtweak.dll
+下载">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            var _bdId ='391982416296a0d54221f59fe35250d4';
+             hm.src = "//hm.baidu.com/hm.js?" + _bdId;
+             var s = document.getElementsByTagName("script")[0]; 
+             s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2011/08/26/Gvim-windows下窗口透明/" title="Gvim windows下窗口透明" itemprop="url">Gvim windows下窗口透明</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2011-08-26T09:42:58.000Z" itemprop="datePublished">8月 26 2011</time>
+    更新日期:<time datetime="2014-10-15T04:37:55.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p><span style="color: #008000;">来源于：<a href="http://hi.baidu.com/idea_star_/blog/item/6133ac0df7acf93c6a60fb7c.html" target="_blank" rel="external">http://hi.baidu.com/idea_star_/blog/item/6133ac0df7acf93c6a60fb7c.html</a></span></p>
+<p>在linux下可以实现窗口透明，最近在windows下折腾vim，一直想尝试将窗口设置为透明。于是google之，找到了<span class="Apple-style-span" style="widows: 2; text-transform: none; text-indent: 0px; letter-spacing: normal; border-collapse: separate; font: medium Simsun; white-space: normal; orphans: 2; color: #000000; word-spacing: 0px;"><span class="Apple-style-span" style="line-height: 20px; font-family: arial, helvetica, sans-serif, verdana, 宋体; font-size: 14px;">vimtweak.dll</span></span></p>
+<p><span class="Apple-style-span" style="widows: 2; text-transform: none; text-indent: 0px; letter-spacing: normal; border-collapse: separate; font: medium Simsun; white-space: normal; orphans: 2; color: #000000; word-spacing: 0px;"><span class="Apple-style-span" style="line-height: 20px; font-family: arial, helvetica, sans-serif, verdana, 宋体; font-size: 14px;">下载地址：<a href="http://www.vim.org/scripts/script.php?script_id=687" target="_blank" rel="external">http://www.vim.org/scripts/script.php?script_id=687</a></span></span></p>
+<p><span class="Apple-style-span" style="widows: 2; text-transform: none; text-indent: 0px; letter-spacing: normal; border-collapse: separate; font: medium Simsun; white-space: normal; orphans: 2; color: #000000; word-spacing: 0px;"><span class="Apple-style-span" style="line-height: 20px; font-family: arial, helvetica, sans-serif, verdana, 宋体; font-size: 14px;">下载后把<span class="Apple-style-span" style="widows: 2; text-transform: none; text-indent: 0px; letter-spacing: normal; border-collapse: separate; font: medium Simsun; white-space: normal; orphans: 2; color: #000000; word-spacing: 0px;"><span class="Apple-style-span" style="line-height: 20px; font-family: arial, helvetica, sans-serif, verdana, 宋体; font-size: 14px;">vimtweak.dll放到gvim.exe的安装目录下。</span></span></span></span></p>
+<p><span class="Apple-style-span" style="widows: 2; text-transform: none; text-indent: 0px; letter-spacing: normal; border-collapse: separate; font: medium Simsun; white-space: normal; orphans: 2; color: #000000; word-spacing: 0px;"><span class="Apple-style-span" style="line-height: 20px; font-family: arial, helvetica, sans-serif, verdana, 宋体; font-size: 14px;"><span class="Apple-style-span" style="widows: 2; text-transform: none; text-indent: 0px; letter-spacing: normal; border-collapse: separate; font: medium Simsun; white-space: normal; orphans: 2; color: #000000; word-spacing: 0px;"><span class="Apple-style-span" style="line-height: 20px; font-family: arial, helvetica, sans-serif, verdana, 宋体; font-size: 14px;">打开gvim，敲入下面命令来实现对应功能。窗口透明后面的参数可以是0~255.个人感觉大于200比较好。</span></span></span></span></p>
+<p><span id="more-370"></span></p>
+<p><span class="Apple-style-span" style="widows: 2; text-transform: none; text-indent: 0px; letter-spacing: normal; border-collapse: separate; font: medium Simsun; white-space: normal; orphans: 2; color: #000000; word-spacing: 0px;"><span class="Apple-style-span" style="line-height: 20px; font-family: arial, helvetica, sans-serif, verdana, 宋体; font-size: 14px;"><span class="Apple-style-span" style="widows: 2; text-transform: none; text-indent: 0px; letter-spacing: normal; border-collapse: separate; font: medium Simsun; white-space: normal; orphans: 2; color: #000000; word-spacing: 0px;"><span class="Apple-style-span" style="line-height: 20px; font-family: arial, helvetica, sans-serif, verdana, 宋体; font-size: 14px;">窗口透明：</span></span></span></span></p>
+<p>:call libcallnr(&#8220;vimtweak.dll&#8221;, &#8220;SetAlpha&#8221;, 200)</p>
+<p>reset alpha</p>
+<p>:call libcallnr(&#8220;vimtweak.dll&#8221;, &#8220;SetAlpha&#8221;, 255)最大化窗口:</p>
+<p>Enable</p>
+<p>:call libcallnr(&#8220;vimtweak.dll&#8221;, &#8220;EnableMaximize&#8221;, 1)</p>
+<p>Disable</p>
+<p>:call libcallnr(&#8220;vimtweak.dll&#8221;, &#8220;EnableMaximize&#8221;, 0)窗口置顶:</p>
+<p>Enable</p>
+<p>:call libcallnr(&#8220;vimtweak.dll&#8221;, &#8220;EnableTopMost&#8221;, 1)</p>
+<p>Disable</p>
+<p>:call libcallnr(&#8220;vimtweak.dll&#8221;, &#8220;EnableTopMost&#8221;, 0)</p>
+<p>也可以在vimrc中加入如下内容</p>
+<p>&#8220;Alpha Window</p>
+<p><span style="color: #000000;">map </span><span style="color: #008800;">&lt;leader&gt;</span><span style="color: #000000;">aw </span><span style="color: #666600;">:</span><span style="color: #000000;">call libcallnr</span><span style="color: #666600;">(</span><span style="color: #008800;">&#8220;vimtweak.dll&#8221;</span><span style="color: #666600;">,</span><span style="color: #008800;">&#8220;SetAlpha&#8221;</span><span style="color: #666600;">,</span><span style="color: #006666;">200</span><span style="color: #666600;">)&lt;</span><span style="color: #000000;">cr</span><span style="color: #666600;">&gt;</span><span style="color: #000000;"></span></p>
+<p>map <span style="color: #008800;">&lt;leader&gt;</span><span style="color: #000000;">aW </span><span style="color: #666600;">:</span><span style="color: #000000;">call libcallnr</span><span style="color: #666600;">(</span><span style="color: #008800;">&#8220;vimtweak.dll&#8221;</span><span style="color: #666600;">,</span><span style="color: #008800;">&#8220;SetAlpha&#8221;</span><span style="color: #666600;">,</span><span style="color: #006666;">255</span><span style="color: #666600;">)&lt;</span><span style="color: #000000;">cr</span><span style="color: #666600;">&gt;</span></p>
+<p>&#8220;Maximized Window</p>
+<p><span style="color: #000000;">map </span><span style="color: #008800;">&lt;leader&gt;</span><span style="color: #000000;">mw </span><span style="color: #666600;">:</span><span style="color: #000000;">call libcallnr</span><span style="color: #666600;">(</span><span style="color: #008800;">&#8220;vimtweak.dll&#8221;</span><span style="color: #666600;">,</span><span style="color: #008800;">&#8220;EnableMaximize&#8221;</span><span style="color: #666600;">,</span><span style="color: #006666;">1</span><span style="color: #666600;">)&lt;</span><span style="color: #000000;">cr</span><span style="color: #666600;">&gt;</span><span style="color: #000000;"></span></p>
+<p>map <span style="color: #008800;">&lt;leader&gt;</span><span style="color: #000000;">mW </span><span style="color: #666600;">:</span><span style="color: #000000;">call libcallnr</span><span style="color: #666600;">(</span><span style="color: #008800;">&#8220;vimtweak.dll&#8221;</span><span style="color: #666600;">,</span><span style="color: #008800;">&#8220;EnableMaximize&#8221;</span><span style="color: #666600;">,</span><span style="color: #006666;">0</span><span style="color: #666600;">)&lt;</span><span style="color: #000000;">cr</span><span style="color: #666600;">&gt;</span></p>
+<p>&#8220;TopMost Window</p>
+<p><span style="color: #000000;">map </span><span style="color: #008800;">&lt;leader&gt;</span><span style="color: #000000;">et </span><span style="color: #666600;">:</span><span style="color: #000000;">call libcallnr</span><span style="color: #666600;">(</span><span style="color: #008800;">&#8220;vimtweak.dll&#8221;</span><span style="color: #666600;">,</span><span style="color: #008800;">&#8220;EnableTopMost&#8221;</span><span style="color: #666600;">,</span><span style="color: #006666;">1</span><span style="color: #666600;">)&lt;</span><span style="color: #000000;">cr</span><span style="color: #666600;">&gt;</span><span style="color: #000000;"></span></p>
+<p>map <span style="color: #008800;">&lt;leader&gt;</span><span style="color: #000000;">eT </span><span style="color: #666600;">:</span><span style="color: #000000;">call libcallnr</span><span style="color: #666600;">(</span><span style="color: #008800;">&#8220;vimtweak.dll&#8221;</span><span style="color: #666600;">,</span><span style="color: #008800;">&#8220;EnableTopMost&#8221;</span><span style="color: #666600;">,</span><span style="color: #006666;">0</span><span style="color: #666600;">)&lt;</span><span style="color: #000000;">cr</span><span style="color: #666600;">&gt;</span></p>
+<p><span class="Apple-style-span" style="widows: 2; text-transform: none; text-indent: 0px; letter-spacing: normal; border-collapse: separate; font: medium Simsun; white-space: normal; orphans: 2; color: #000000; word-spacing: 0px;"><span class="Apple-style-span" style="line-height: 21px; font-family: Arial, Helvetica, Geneva, sans-serif; font-size: 14px;"><span style="font-size: 14px;">还有，vtano.ahk：GVIM+AHK实现顶层透明笔记本，链接：<a href="http://xbeta.info/ahk-gvim-note.htm" target="_blank" rel="external">http://xbeta.info/ahk-gvim-note.htm</a></span></span></span></p>
+<p><span style="margin: 0px; font-family: NSimsun; padding: 0px;"><span style="margin: 0px; color: #0000ff; padding: 0px;">1. 基本信息</span></span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;      名称：vtano.ahk：GVIM+AHK实现顶层透明笔记本</span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;      作者：xbeta (善用佳软)</span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;      版本：v1.0  (2007-10-30)</span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;      网站：<a href="http://blog.sina.com.cn/xbeta" target="_blank" rel="external">http://blog.sina.com.cn/xbeta</a></span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;      由来：经常在阅读文档时，希望有一个小巧的笔记工具，可以透明悬浮在顶层，随时键入文字，而不影响原来的阅读对象。由于我极喜欢GVIM，所以想到了用Auto Hotkey设置GVIM置顶、透明的办法。当然，GVIM自身有一个VimTweak扩展，可实现类似功能。但VimTweak的透明是背景与文字整体设定透明度，这样文字看起来不清晰。而AHK可以设定背景色完全透明（如果能设定透明度就更理想了），而文字正常显示，我认为这种效果更好一些。</span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;      适用对象：计算机上装有Auto Hotkey 和 GVIM，并且极其偏爱它们</span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;  2. 使用方法</span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;      将此文件放在加入path变量的目录（如系统目录）下，运行 vtano.ahk 即可</span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;      或任意放一位置，然后建立xx.lnk，运行 xx 即可</span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;  3. 说明</span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;      ① 如果你不用AHK，也可以把此文档编译为exe</span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;      ② 中间大段的send，也可以改写到vim脚本中</span></p>
+<p><span style="margin: 0px; color: #0000ff; padding: 0px;">;      ③ 如果想Gvim的标题栏也透明，只须让标题栏颜色（windows样式）、gvim背景色、ahk设定的窗口透明色三色相同。</span><span style="margin: 0px; color: #804040; padding: 0px;"><strong>SetTitleMatchMode</strong></span>,<span style="background-color: #f2f2f2; margin: 0px; padding: 0px;"><span style="margin: 0px; color: #ff00ff; padding: 0px;">2</span></span> <span style="margin: 0px; color: #0000ff; padding: 0px;">;设定ahk匹配窗口标题的模式</span></p>
+<p><span style="margin: 0px; color: #804040; padding: 0px;"><strong>run</strong></span> d:\Program Files\gvim\vim71\gvim.exe<span style="margin: 0px; color: #0000ff; padding: 0px;">;启动gvim</span></p>
+<p><span style="margin: 0px; color: #804040; padding: 0px;"><strong>winactivate</strong></span>, No Name<span style="margin: 0px; color: #0000ff; padding: 0px;">; 激活此窗口</span></p>
+<p><span style="margin: 0px; color: #804040; padding: 0px;"><strong>sleep</strong></span>,<span style="background-color: #f2f2f2; margin: 0px; padding: 0px;"><span style="margin: 0px; color: #ff00ff; padding: 0px;">500</span></span> <span style="margin: 0px; color: #0000ff; padding: 0px;">; 延时，确保</span><span style="margin: 0px; color: #804040; padding: 0px;"><strong>send</strong></span> :hi clear Normal{enter}<span style="margin: 0px; color: #0000ff; padding: 0px;">;取消gvim的颜色</span></p>
+<p><span style="margin: 0px; color: #804040; padding: 0px;"><strong>send</strong></span> :hi clear{enter}<span style="margin: 0px; color: #0000ff; padding: 0px;">;取消gvim的颜色</span></p>
+<p><span style="margin: 0px; color: #804040; padding: 0px;"><strong>send</strong></span> :hi Normal guifg=red guibg=green{enter}<span style="margin: 0px; color: #0000ff; padding: 0px;">;设定为绿底红字</span></p>
+<p><span style="margin: 0px; color: #804040; padding: 0px;"><strong>send</strong></span> :e c:\WINDOWS\Temp\vtano.text{enter}<span style="margin: 0px; color: #0000ff; padding: 0px;">;打开笔记文件，后缀为text是防止txt有其他语法加亮</span></p>
+<p><span style="margin: 0px; color: #804040; padding: 0px;"><strong>sleep</strong></span>,<span style="background-color: #f2f2f2; margin: 0px; padding: 0px;"><span style="margin: 0px; color: #ff00ff; padding: 0px;">500</span></span></p>
+<p><span style="margin: 0px; color: #804040; padding: 0px;"><strong>winmove</strong></span>, vtano.text,,<span style="background-color: #f2f2f2; margin: 0px; padding: 0px;"><span style="margin: 0px; color: #ff00ff; padding: 0px;">50</span></span>,<span style="background-color: #f2f2f2; margin: 0px; padding: 0px;"><span style="margin: 0px; color: #ff00ff; padding: 0px;">50</span></span>,<span style="background-color: #f2f2f2; margin: 0px; padding: 0px;"><span style="margin: 0px; color: #ff00ff; padding: 0px;">300</span></span>,<span style="background-color: #f2f2f2; margin: 0px; padding: 0px;"><span style="margin: 0px; color: #ff00ff; padding: 0px;">150</span></span> <span style="margin: 0px; color: #0000ff; padding: 0px;">;设置窗口：大小、位置</span></p>
+<p><span style="margin: 0px; color: #804040; padding: 0px;"><strong>winset</strong></span> AlwaysOnTop, ON, vtano.text<span style="margin: 0px; color: #0000ff; padding: 0px;">;设置窗口：置顶</span></p>
+<p><span style="margin: 0px; color: #804040; padding: 0px;"><strong>WinSet</strong></span>, TransColor, 00FF00, vtano.text<span style="margin: 0px; color: #0000ff; padding: 0px;">;设置窗口：将绿色部分设为透明</span></p>
+<p><span style="margin: 0px; font-family: NSimsun; padding: 0px;">脚本完。</span></p>
+<p><span style="margin: 0px; font-family: NSimsun; padding: 0px;">注：上述内容以Vim的:TOhtml功能导出。</span></p>
+<p>还可以参考：<a href="http://it.chinawin.net/softwaredev/article-2229f.html" target="_blank" rel="external">http://it.chinawin.net/softwaredev/article-2229f.html</a></p>
+<p><a href="http://blog.chinaunix.net/space.php?uid=25183821&amp;do=blog&amp;cuid=2489087" target="_blank" rel="external">http://blog.chinaunix.net/space.php?uid=25183821&amp;do=blog&amp;cuid=2489087</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/vim/">vim</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2011/08/26/Gvim-windows下窗口透明/" data-title="Gvim windows下窗口透明 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2011/08/31/工作效率很重要吗？/" title="工作效率很重要吗？">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  工作效率很重要吗？</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2011/08/25/Redis内存使用优化与存储/"  title="Redis内存使用优化与存储">
+ <strong>NEXT:</strong><br/> 
+ <span>Redis内存使用优化与存储
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		
+		
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>43</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/Books/" style="font-size: 13.33px;">Books</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript/" style="font-size: 20.00px;">JavaScript</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 16.67px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    var _bdId = '391982416296a0d54221f59fe35250d4';
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F" + _bdId +"'  type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'null', 'null');  
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+</html>

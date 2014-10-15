@@ -1,0 +1,474 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="baidu_union_verify" content="d1952c66cf48912e21c18c7c581f382a">
+  <meta name="360-site-verification" content="67fbcc5a67f4c65c057315b28fa0b2c8" />
+<meta name="google-site-verification" content="2GzxQ0VtXwTSUdmGm6DzcmhTzM_I9QmzCb_pzpMzD88" />
+  
+    <title>高性能python web服务器 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="[object Object]">
+    
+    <meta name="description" content="来自于： http://www.webguo.com/2011/01/24/python_high_performance_webserver.html
+还有一篇外篇测试：http://nichol.as/benchmark-of-python-web-servers 
+最近在物色高性能的pytho">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            var _bdId ='391982416296a0d54221f59fe35250d4';
+             hm.src = "//hm.baidu.com/hm.js?" + _bdId;
+             var s = document.getElementsByTagName("script")[0]; 
+             s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2011/08/17/高性能python-web服务器/" title="高性能python web服务器" itemprop="url">高性能python web服务器</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2011-08-17T08:40:19.000Z" itemprop="datePublished">8月 17 2011</time>
+    更新日期:<time datetime="2014-10-15T04:37:55.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p><span style="color: #008000;"><strong>来自于： <a href="http://www.webguo.com/2011/01/24/python_high_performance_webserver.html" target="_blank" rel="external">http://www.webguo.com/2011/01/24/python_high_performance_webserver.html</a></strong></span></p>
+<p><span style="color: #008000;"><strong>还有一篇外篇测试：<a href="http://nichol.as/benchmark-of-python-web-servers" target="_blank" rel="external">http://nichol.as/benchmark-of-python-web-servers</a> </strong></span></p>
+<p>最近在物色高性能的python web服务器。一般来说，web服务器常见的有nginx，apache，lighttpd等，我是个nginx控，所以一开始就把apache，lighttpd给抛弃了，采用nginx作为前端。</p>
+<p>当然，前端固然很重要，但更加重要的是后端的处理服务器，以不同模式为基础构建的web app服务器决定着整个系统的响应快慢。</p>
+<p>通过参考Nicholas Piel写的<a href="http://nichol.as/benchmark-of-python-web-servers" target="_blank" rel="external">《Benchmark of Python WSGI Servers》</a>我圈定了以下几个服务器（模块）：<a href="http://wiki.nginx.org/NginxNgxWSGIModule" target="_blank" rel="external">mod_wsgi for nginx</a>，<a href="http://www.fapws.org/" target="_blank" rel="external">fapws3</a>， <a href="http://www.gevent.org/" target="_blank" rel="external">gevent</a>，<a href="http://projects.unbit.it/uwsgi/" target="_blank" rel="external">uwsgi</a>，以及陪同测试的django自带FastCGI prefork/threaded模式。</p>
+<p>mod_wsgi代表nginx原配python wsgi协议支持，fapws3是Fast Asynchronous Python Web Server的简称，使用processor/thread模型，gevent是走的lightweight threads路线，uwsgi采用的是nginx的模块+自身socket多processor/thread模型，之所以没选择callback/generator类型的服务器是因为都还不成熟，在Nicholas的那篇文章里面可以看出他们丢包率以及性能都不尽人意。</p>
+<p>首先，介绍硬件情况：公司一台年久失修的服务器，P4 2G单核，512M内存，1.5G Swap，Ubuntu 8.10 Desktop，上面还开了个Nagios监控器和个FireFox，性能绝对是你能想象出的底线。原本服务器上跑了个Apache2，因为很久没有使用apache2了，实在是懒得去翻document找如何配置，就又装了个nginx 0.8.35，今天升级到了0.8.36，性能上2者基本毫无区别，36版只是针对35的bug进行了修复，所以对结果没有实质上的影响。django 1.1+flup作陪同的FastCGI prefork/threaded模式测试，测试软件采用Apache Benchmark Version 2.3。</p>
+<p><span id="more-329"></span></p>
+<p>首先是Django的配置，生成一个新的项目，直接访问其默认页面，项目启动参数分别为</p>
+<ol>
+<li><span><span>python manage.py runfcgi method=threaded host=127.0.0.1 port=3033 daemonize=</span><span class="keyword">false</span></span></li>
+<li><span>python manage.py runfcgi method=prefork host=127.0.0.1 port=3033 daemonize=<span class="keyword">false</span></span></li>
+<li><span>python manage.py runfcgi method=threaded host=127.0.0.1 port=3033 daemonize=<span class="keyword">false</span><span> minspare=50 maxspare=50 </span></span></li>
+</ol>
+<p>为什么第三个不同，是因为参考了JavaEye上的一篇评测，采用静态进程池的话性能会比动态线程生成高2倍左右（<a href="http://www.javaeye.com/topic/267429" target="_blank" rel="external">评测原文</a>）</p>
+<p>Nginx的FastCGI服务器参数采用默认参数</p>
+<p>在ab -n 1000 -c 20的情况下，5次运行得到的Request Per Second分别如下：</p>
+<table border="0"><br><tbody><br><tr><br><td>nginx+fcgi+prefork</td><br><td>44.06</td><br><td>54.93</td><br><td>42.6</td><br><td>41.08</td><br><td>41.89</td><br></tr><br><tr><br><td>nginx+fcgi+thread</td><br><td>242.12</td><br><td>195.96</td><br><td>243.69</td><br><td>209.59</td><br><td>204.59</td><br></tr><br><tr><br><td>nginx+fcgi+prefork+spare</td><br><td>119.51</td><br><td>202.89</td><br><td>177.6</td><br><td>206.72</td><br><td>206.85</td><br></tr><br></tbody><br></table>
+
+<p>可见使用静态进程池之后进程模式的性能有大幅提高。本来下一个是Nginx+mod_wsgi的测试，很可惜的是，不知道是配置原因还是其他什么问题，在4个连接测试完之后mod_wsgi就死掉了，因此这次测试中只好放弃。</p>
+<p>接着是fapws3，号称最快的Python WSGI服务器，我们来看看起到底有多快。</p>
+<p>PS: 安装的时候需要安装libev-dev包，fapws3是基于libev技术实现的。</p>
+<p>使用的Django Wrapper如下：</p>
+<ol>
+<li><span><span class="keyword">import</span><span> fapws._evwsgi as evwsgi </span></span></li>
+<li><span><span class="keyword">from</span><span> fapws </span><span class="keyword">import</span><span> base </span></span></li>
+<li><span><span class="keyword">import</span><span> time </span></span></li>
+<li><span><span class="keyword">import</span><span> sys, os </span></span></li>
+<li><span>sys.setcheckinterval(<span class="number">100000</span><span>) </span></span></li>
+<li><span>sys.path.append(<span class="string">&#8216;/opt/www/djtest/&#8217;</span><span>) </span></span></li>
+<li><span>os.environ[<span class="string">‘DJANGO_SETTINGS_MODULE’</span><span>] = </span><span class="string">&#8216;settings&#8217;</span></span></li>
+<li><span><span class="keyword">from</span><span> fapws.contrib </span><span class="keyword">import</span><span> django_handler, views </span></span></li>
+<li><span><span class="keyword">import</span><span> django </span></span><br>10.11.  <span><span class="keyword">def</span><span> start(): </span></span></li>
+<li><span> evwsgi.start(<span class="string">&#8220;0.0.0.0&#8243;</span><span>, </span><span class="number">98</span><span>) </span></span><br>13.14.  <span> evwsgi.set_base_module(base) </span><br>15.16.  <span> <span class="keyword">def</span><span> generic(environ, start_response): </span></span></li>
+<li><span> res=django_handler.handler(environ, start_response) </span></li>
+<li><span> <span class="keyword">return</span><span> [res] </span></span><br>19.20.  <span> mediafile=views.Staticfile(django.<strong>path</strong>[<span class="number">0</span><span>] + </span><span class="string">&#8216;/contrib/admin/media/&#8217;</span><span>, maxage=</span><span class="number">2629000</span><span>) </span></span></li>
+<li><span> evwsgi.wsgi_cb((<span class="string">&#8220;/media/&#8221;</span><span>,mediafile)) </span></span></li>
+<li><span> evwsgi.wsgi_cb((<span class="string">&#8221;</span><span>,generic)) </span></span><br>23.24.  <span> evwsgi.set_debug(<span class="number">0</span><span>) </span></span></li>
+<li><span> evwsgi.run() </span><br>26.27.  <span><span class="keyword">if</span><span> <strong>name</strong>==</span><span class="string">&#8220;<strong>main</strong>&#8221;</span><span>: </span></span></li>
+<li><span> start() </span></li>
+</ol>
+<p>结果如下：</p>
+<table border="0"><br><tbody><br><tr><br><td>fapws</td><br><td>379.32</td><br><td>406.58</td><br><td>413.83</td><br><td>399.29</td><br><td>414.61</td><br></tr><br><tr><br><td>nginx+proxy+fapws</td><br><td>328.61</td><br><td>337.2</td><br><td>326.6</td><br><td>262.6</td><br><td>274.57</td><br></tr><br></tbody><br></table>
+
+<p>不错，非常不错，将近400的RPS，即便是被NGINX包了一层反向连接的情况下依然还有平均300上下的RPS表现，很对得起自己的称号，唯独美中不足的是Fapws不支持HTTP1.1，其官网也是说HTTP1.1是RoadMap中计划的，什么时候实现？别问我~</p>
+<p>然后是uWSGI，这个WEB服务器有点特殊，它本身支持作为其他服务器的模块而存在如nginx，apache，cherokee等，但是其自身也是需要同时打开作为一个socket存在于系统之中，你可以开多个socket文件，这样就可以通过nginx实现单机分流，只不过谁知道有没有用捏。</p>
+<p>安装方法参考nginx+mod_wsgi的方法安装，不同的是加入nginx模块后还需要编译一个对应本机python版本的uwsgi放入/usr/bin目录下然后用如下命令启动。</p>
+<p>启动命令：</p>
+<ol>
+<li><span><span>uwsgi -s /tmp/uwsgi.sock -C -x /usr/local/www/djtest/uwsgi.xml -d /var/log/uwsgi.log &amp; </span></span></li>
+</ol>
+<p>uwsgi.xml</p>
+<div class="dp-highlighter"><br><div class="bar"><br><div class="tools"><a href="http://www.oschina.net/bbs/thread/10751#" target="_blank" rel="external">源码</a><a href="http://www.oschina.net/bbs/thread/10751#" target="_blank" rel="external">打印</a><a href="http://www.oschina.net/bbs/thread/10751#" target="_blank" rel="external">？</a></div><br></div>
+
+<ol>
+<li><span><span>/opt/www </span></span><br>2.3.4.</li>
+</ol>
+<p>uwsgi.py</p>
+<ol>
+<li><span><span class="keyword">import</span><span> os, sys </span></span></li>
+<li><span>sys.path.append(<span class="string">&#8216;/opt/www/djtest/&#8217;</span><span>) </span></span></li>
+<li><span>os.environ[<span class="string">‘DJANGO_SETTINGS_MODULE’</span><span>] = </span><span class="string">&#8216;settings&#8217;</span></span></li>
+<li><span><span class="keyword">import</span><span> django.core.handlers.wsgi </span></span></li>
+<li><span>application = django.core.handlers.wsgi.WSGIHandler() </span></li>
+</ol>
+<p>结果不是很好，但也不是很挫。</p>
+<table border="0"><br><tbody><br><tr><br><td>nginx+uwsgi</td><br><td>294.78</td><br><td>248.21</td><br><td>304.98</td><br><td>296.5</td><br><td>304.43</td><br></tr><br></tbody><br></table>
+
+<p>最后是Gevent，这个时候我将nginx换成了0.8.36，好在对于结果实际上是没什么影响的，性能误差在2%以内。</p>
+<p>安装Gevent费了不少精神，其官网貌似被墙，中英文资料特别少，首先得安装libevent1.4以上，ubuntu自带的1.3是不行的，编译会报错，还得用easy_install greenlet。安装完这2个后编译使用-I -L参数定位到你安装的libevent目录下lib目录和include目录，还需要将lib目录下的所有文件做个软连接到/usr/lib目录。编译好后，就可以开始使用了。</p>
+<p>Django Wrapper代码如下：</p>
+<ol>
+<li><span><span class="keyword">from</span><span> gevent </span><span class="keyword">import</span><span> wsgi </span></span></li>
+<li><span><span class="keyword">from</span><span> djtest.wsgi </span><span class="keyword">import</span><span> application </span></span></li>
+<li><span>wsgi.WSGIServer((<span class="string">&#8221;</span><span>, </span><span class="number">95</span><span>), application, spawn=</span><span class="special">None</span><span>).serve_forever() </span></span><br></li></ol></div>
+
+<p>结果如下：</p>
+<table border="0"><br><tbody><br><tr><br><td>gevent</td><br><td>330.18</td><br><td>330.36</td><br><td>329.76</td><br><td>320.66</td><br><td>277.37</td><br></tr><br><tr><br><td>nginx+proxy+gevent</td><br><td>287.86</td><br><td>286.69</td><br><td>288.22</td><br><td>280.37</td><br><td>288.28</td><br></tr><br></tbody><br></table>
+
+<p>令人惊讶的性能，但还是不及fapws。</p>
+<p>最后是变态版的高压力测试，ab -n 10000 -c 500，估计是这台服务器的极限了。django的FastCGI模式没有加入测试，原因是太慢了，不想等，只测试了fapws，nginx+proxy+fapws，gevent，nginx+proxy+gevent，nginx+uwsgi，结果如下：</p>
+<table border="0"><br><tbody><br><tr><br><td>gevent</td><br><td>192.58</td><br></tr><br><tr><br><td>nginx+proxy+gevent</td><br><td>164.84</td><br></tr><br><tr><br><td>fapws</td><br><td>288.14</td><br></tr><br><tr><br><td>nginx+proxy+fapws</td><br><td>221.01</td><br></tr><br><tr><br><td>nginx+uwsgi</td><br><td>173.601</td><br></tr><br></tbody><br></table>
+
+<p>fapws再次胜出，不过可以看出性能也下降了不少。值得说明的是这次测试中各种服务器均出了一点状况，单用fapws会在ab测试完之后提示大量连接被关闭，无法Response，但ab那边显示0个failed connection，fapws+nginx则不会出现，uwsgi比较搞，若出现failed connection，ab报告中server name就是nginx，完整的通过测试就是空白，难道错误都是nginx一个人的事么？gevent的一个奇特现象是在nginx包了一层的情况下稳定性竟然还不如单用gevent，这点很是奇怪，nginx只做了个反向连接哎？这完全是不应该发生的呐。</p>
+<p>总结：如果你是个冒险者，fapws绝对是你最佳的选择，性能没话说，高并发也不是那么糟（我觉得ab不是那么靠谱），美中不足的是其不支持HTTP1.1协议。如果你担心其稳定性，用nginx包一层，只要fapws坏了你就立刻能从访问页面上得到信息，当然包一层是以性能损失为代价的，这就看自己的选择了。如果你期望用一个nginx统一后端各种CGI语言的运行，uWSGI挺不错的，类似于php-fpm的启动模式，还可以做单机分流，配合nginx强大的高并发负载能力，无论在什么条件下均有优异的表现，蛋疼的是稳定性还有所欠佳，高并发时有的连接会死掉。GEVENT则是新技术模型（lightweight threads）下一个强大的实现，低压的时候接近fapws的性能，高压的时候单用依然可以达到和uwsgi类似的RPS，无奈的是gevent和nginx搭配起来用就有点杯具了，希望以后的版本不会出现这个问题。</p>
+<p><span style="margin: 0px; color: #ff0000; padding: 0px;">2010/4/24 Update:很荣幸Gevent的作者看到了这篇文章提出了一点修改的建议，于是乎今天我又按照他所说的方法重新测试了一下，得到了新的结果。</span></p>
+<p>ab -n 1000 -c 20</p>
+<table border="0"><br><tbody><br><tr><br><td>gevent</td><br><td>335.21</td><br><td>325.91</td><br><td>315.43</td><br><td>336.77</td><br><td>334.94</td><br></tr><br><tr><br><td>nginx+proxy+gevent</td><br><td>271.02</td><br><td>278.95</td><br><td>263.30</td><br><td>278.58</td><br><td>272.16</td><br></tr><br></tbody><br></table>
+
+<p>ab -n 10000 -c 500</p>
+<table border="0"><br><tbody><br><tr><br><td>gevent</td><br><td>209.71</td><br><td>242.30</td><br><td>291.20</td><br><td>244.55</td><br><td>265.79</td><br></tr><br><tr><br><td>nginx+proxy+gevent</td><br><td>158.14</td><br><td>158.25</td><br><td>158.39</td><br><td>174.02</td><br><td>158.18</td><br></tr><br></tbody><br></table>
+
+<p>结果太令人惊讶了，Gevent的性能和Fapws相差5%左右，但提供了完整的HTTP1.1支持，更好的高并发访问的稳定性，当然一旦你用上nginx做前端反向代理，性能还是会再下降30%左右。如果是生产环境的话在fapws没有完整的支持HTTP1.1之前Gevent绝对是最好的选择！</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/python/">python</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2011/08/17/高性能python-web服务器/" data-title="高性能python web服务器 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2011/08/17/Google-Protocol-Buffer-的使用和原理/" title="Google Protocol Buffer 的使用和原理">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Google Protocol Buffer 的使用和原理</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2011/08/17/Facebook的服务器架构/"  title="Facebook的服务器架构">
+ <strong>NEXT:</strong><br/> 
+ <span>Facebook的服务器架构
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		
+		
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>43</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/Books/" style="font-size: 13.33px;">Books</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript/" style="font-size: 20.00px;">JavaScript</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 16.67px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    var _bdId = '391982416296a0d54221f59fe35250d4';
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F" + _bdId +"'  type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'null', 'null');  
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+</html>

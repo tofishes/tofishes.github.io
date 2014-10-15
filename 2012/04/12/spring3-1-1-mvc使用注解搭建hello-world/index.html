@@ -1,0 +1,483 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="baidu_union_verify" content="d1952c66cf48912e21c18c7c581f382a">
+  <meta name="360-site-verification" content="67fbcc5a67f4c65c057315b28fa0b2c8" />
+<meta name="google-site-verification" content="2GzxQ0VtXwTSUdmGm6DzcmhTzM_I9QmzCb_pzpMzD88" />
+  
+    <title>spring3.1.1 mvc使用注解搭建hello world | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="[object Object]">
+    
+    <meta name="description" content="使用spring3.1.1中的mvc搭建项目，写一个hello world出来。
+看了两天官方文档，不管好坏，就是组织的比较零散，不能有序的给人一个项目基本的轮廓。而且里面的例子也不是最佳实践。
+开发工具是Eclipse 3.7，服务器是tomcat7，用的是jee3.0标准，新建一个 Dynami">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            var _bdId ='391982416296a0d54221f59fe35250d4';
+             hm.src = "//hm.baidu.com/hm.js?" + _bdId;
+             var s = document.getElementsByTagName("script")[0]; 
+             s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2012/04/12/spring3-1-1-mvc使用注解搭建hello-world/" title="spring3.1.1 mvc使用注解搭建hello world" itemprop="url">spring3.1.1 mvc使用注解搭建hello world</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2012-04-12T10:49:07.000Z" itemprop="datePublished">4月 12 2012</time>
+    更新日期:<time datetime="2014-10-15T04:37:55.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>使用spring3.1.1中的mvc搭建项目，写一个hello world出来。</p>
+<p>看了两天官方文档，不管好坏，就是组织的比较零散，不能有序的给人一个项目基本的轮廓。而且里面的例子也不是最佳实践。</p>
+<p>开发工具是Eclipse 3.7，服务器是tomcat7，用的是jee3.0标准，新建一个 Dynamic Web Project，随便命名为cms。</p>
+<p><span id="more-689"></span></p>
+<p>然后往classpath中加入最基本的jar包（最简单自然是把spring下的所有包都导入），其实就是把spring的jar包复制到项目下的WEB-INF/lib目录即可（偶尔有意外者，可再去配置buildpath，手动加入jar包），筛选后的基本jar包如图所示：</p>
+<p><a href="http://cssor.com/wp-content/uploads/2012/04/spring3-mvc-jars.png" target="_blank" rel="external"><img src="http://cssor.com/wp-content/uploads/2012/04/spring3-mvc-jars-300x238.png" alt="" title="spring3 mvc jars"></a></p>
+<p>&nbsp;</p>
+<p>相关jar包添加完毕后，开始做基础配置，首先修改web.xml（上图也可以看见）文件如下：</p>
+<pre class="brush:xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0"&gt;
+    &lt;display-name&gt;cms&lt;/display-name&gt;
+    &lt;welcome-file-list&gt;
+        &lt;welcome-file&gt;index.html&lt;/welcome-file&gt;
+        &lt;welcome-file&gt;index.jsp&lt;/welcome-file&gt;
+    &lt;/welcome-file-list&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;cms&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;cms&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;</pre>
+
+<p>就是配置一个DispatcherServlet，其url-pattern是/，而不是/<em>，需要注意这点。/表示DispatcherServlet为当前缺省servlet，凡是在web.xml文件中找不到匹配的&lt;servlet-mapping&gt;元素的URL，它们的访问请求都将交给缺省Servlet处理。而/</em>会处理所有的请求，不管有没有其他的&lt;servlet-mapping&gt;匹配。举例说，如果在根目录有这样一个文件/a.html，那么访问 <a href="http://localhost/a.html，使用配置/，则不会被spring" target="_blank" rel="external">http://localhost/a.html，使用配置/，则不会被spring</a> mvc处理，直接访问到a.html，如果使用配置/*，那么spring mvc就会进行处理，没有相应handler，则会报错。这样可以避免静态文件，样式文件，图片，js文件等被spring mvc处理，而出现找不到的情况。</p>
+<p>web.xml配置完成，根据spring mvc默认的约定，还需在WEB-INF目录下新建一个cms-serlvet.xml ，命名不是随意的，而是根据DispatcherServlet在web.xml中所对应的servlet-name来命名（跟项目名无关，虽然所建项目名也是cms），结构为 [servlet-name]-servlet.xml。</p>
+<p><a href="http://cssor.com/wp-content/uploads/2012/04/spring-mvc-config-file.png" target="_blank" rel="external"><img src="http://cssor.com/wp-content/uploads/2012/04/spring-mvc-config-file-300x99.png" alt="" title="spring mvc config file"></a></p>
+<p>cms-servlet.xml配置基于Annotation（注解）的方式，内容如下，</p>
+<p>&nbsp;</p>
+<pre class="brush:xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+
+http://www.springframework.org/schema/beans
+
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+
+http://www.springframework.org/schema/mvc
+
+http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+
+http://www.springframework.org/schema/context
+
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd"&gt;
+
+    &lt;context:component-scan base-package="com.cssor.controller"/&gt;
+    &lt;mvc:annotation-driven /&gt;
+
+    &lt;bean class="org.springframework.web.servlet.view.UrlBasedViewResolver"&gt;
+        &lt;property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/&gt;
+        &lt;property name="prefix" value="/WEB-INF/view/"/&gt;
+        &lt;property name="suffix" value=".jsp"/&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;</pre>
+
+<p>其中jsp文件是放在 /WEB-INF/view/目录下，context:component-scan定义了spring自动扫描基础包路径，该包下的类会被srping自动扫描管理，基于annotation。mvc:annotation-driven启动注解驱动的mvc。</p>
+<p>配置都完成，开始写Controller，新建一个类，Main.java，内容如下：</p>
+<pre class="brush:java">package com.cssor.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+@Controller
+public class Main {
+
+    @RequestMapping(value="/hello")
+    public ModelAndView handleRequest() {
+
+        ModelAndView mav = new ModelAndView("hello");
+        mav.addObject("what", "Hello World!");
+
+        return mav;
+    }
+
+}</pre>
+
+<p>然后在上文配置过的视图指定目录/WEB-INF/view/下建立hello.jsp，注意jsp文件名是跟上文中Main.classs所写的 new ModelAndView(&#8220;hello&#8221;)是对应关系，可不是乱起的，是同名关系。hello.jsp内容如：</p>
+<pre class="brush:xml">&lt;%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-CN"&gt;
+&lt;head&gt;
+&lt;meta charset="UTF-8"&gt;
+&lt;title&gt;Insert title here&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h2&gt;${what }&lt;/h2&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+
+<p>然后部署项目到tomcat，启动tomcat，访问 <a href="http://localhost/hello，就可以看到输出了。至此，基本环境算是搭好了。" target="_blank" rel="external">http://localhost/hello，就可以看到输出了。至此，基本环境算是搭好了。</a></p>
+<p>参考：<a href="http://starscream.iteye.com/blog/1058693" target="_blank" rel="external">http://starscream.iteye.com/blog/1058693</a></p>
+<p><a href="http://hi.baidu.com/С%B6%BE%B3%E6q/blog/item/42cce919a656f80934fa4110.html。" target="_blank" rel="external">http://hi.baidu.com/С%B6%BE%B3%E6q/blog/item/42cce919a656f80934fa4110.html。</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/java/">java</a><a href="/tags/spring-mvc-annotation/">spring mvc annotation</a><a href="/tags/spring3-1/">spring3.1</a><a href="/tags/spring3-1-mvc/">spring3.1 mvc</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2012/04/12/spring3-1-1-mvc使用注解搭建hello-world/" data-title="spring3.1.1 mvc使用注解搭建hello world | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2012/04/15/Linux下的计划任务设置/" title="Linux下的计划任务设置">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Linux下的计划任务设置</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2012/04/10/最炫的民族风各种同步MV版本/"  title="最炫的民族风各种同步MV版本">
+ <strong>NEXT:</strong><br/> 
+ <span>最炫的民族风各种同步MV版本
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		
+		
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>43</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/Books/" style="font-size: 13.33px;">Books</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript/" style="font-size: 20.00px;">JavaScript</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 16.67px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    var _bdId = '391982416296a0d54221f59fe35250d4';
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F" + _bdId +"'  type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'null', 'null');  
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+</html>

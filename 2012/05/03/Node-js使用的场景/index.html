@@ -1,0 +1,409 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="baidu_union_verify" content="d1952c66cf48912e21c18c7c581f382a">
+  <meta name="360-site-verification" content="67fbcc5a67f4c65c057315b28fa0b2c8" />
+<meta name="google-site-verification" content="2GzxQ0VtXwTSUdmGm6DzcmhTzM_I9QmzCb_pzpMzD88" />
+  
+    <title>Node.js使用的场景 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="[object Object]">
+    
+    <meta name="description" content="工欲善其事必先利其器， 利其器前也要选好这个“器”。Nodejs好像很好，但是也不是什么场景都好用，以下可以做些参考。
+来源于：http://cnodejs.org/topic/4f97d5b8407edba2146030dd
+原文地址在这里：http://nodeguide.com/convinc">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            var _bdId ='391982416296a0d54221f59fe35250d4';
+             hm.src = "//hm.baidu.com/hm.js?" + _bdId;
+             var s = document.getElementsByTagName("script")[0]; 
+             s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2012/05/03/Node-js使用的场景/" title="Node.js使用的场景" itemprop="url">Node.js使用的场景</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2012-05-03T13:15:43.000Z" itemprop="datePublished">5月 3 2012</time>
+    更新日期:<time datetime="2014-10-15T04:37:55.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#糟糕的用例："><span class="toc-number">1.</span> <span class="toc-text">糟糕的用例：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#好的用例"><span class="toc-number">2.</span> <span class="toc-text">好的用例</span></a></li></ol>
+		</div>
+		
+		<p>工欲善其事必先利其器， 利其器前也要选好这个“器”。Nodejs好像很好，但是也不是什么场景都好用，以下可以做些参考。</p>
+<p><strong>来源于：<a href="http://cnodejs.org/topic/4f97d5b8407edba2146030dd" target="_blank" rel="external">http://cnodejs.org/topic/4f97d5b8407edba2146030dd</a></strong></p>
+<p>原文地址在这里：<a href="http://nodeguide.com/convincing_the_boss.html" target="_blank" rel="external">http://nodeguide.com/convincing_the_boss.html</a> 英文版，题目的意思是说服老板的指南，文章中就Node.js应用场景这一重要话题说了一些看法，我摘取其中比较重要的段落，翻译在这里：</p>
+<p><span id="more-748"></span></p>
+<h3 id="糟糕的用例："><span style="color: #ff0000;">糟糕的用例：</span></h3>
+<p>高CPU消耗的app：</p>
+<p>尽管我喜欢node.js，却有很多的用例是不靠谱的。最显而易见的用例是那种CPU使用率高同时I/O操作小的。所以如果你打算写一个视频编码软件，人工智能软件或者类似的CPU使用率高的软件，请不要用node.js。要是你肯稍微变通一下，用C或C++效果会更好。</p>
+<p>话虽这么说，node.js允许你很轻松的写C++扩展，所以你可以把它作为一个你核心算法的脚本引擎。</p>
+<p>简单的CRUD / HTML apps</p>
+<p>尽管可以说node.js是个写各种web程序的不错的工具，你也不该期待它在这点上能比PHP，Ruby或Python带给你更多的好处。是的，你的app也许最终会多一点可扩展性，可是不会因为你是用node.js写的就会神奇般的的带来更多的访问量。</p>
+<p>事实是，当我们去看node.js的好的框架时，目前还没有并没有比Rails, CakePHP或者Django更强大的应用场景。如果你的app只是简单的基于一些数据库做HTML的渲染，使用node.js不会给你显而易见的好处。</p>
+<p>NoSQL + Node.js + 各种扯淡的时髦词汇</p>
+<p>如果你的下一个app的架构读起来像一个NoSQL做配料的菜谱，请花点时间读读下面的内容。</p>
+<p>是的，Redis, CouchDB, MongoDB, Riak, Casandra等等确实诱人，但是夏娃的红苹果也一样难以抗拒。如果你准备用node.js来冒一次技术风险，你就不该再加上更多的你没有完全理解的技术。</p>
+<p>确实，有一些文档数据库的合理的用例，但是如果你准备在你的软件上建立一个商业环境，坚持那些保守点的数据库技术（像postgres或mysql）也许胜过于你满足你迂腐的技术观，也胜过于只是让你的朋友觉得你很牛。</p>
+<h3 id="好的用例"><span style="color: #ff0000;">好的用例</span></h3>
+<p>JSON API</p>
+<p>建立轻量级的REST / JSON api正是node.js的亮点。如果你要包上你的数据库操作或web服务，同时通过JSON把接口暴露出来，node.js的无阻塞模型和JavaScript技术让它成为你非常好的一个选择。</p>
+<p>单页的app</p>
+<p>如果你打算写一个AJAX操作非常多的单页面app（比如gmail），node.js是非常合适的。在极短的响应时间内处理大量请求的能力，不同的客户端共享像确认信息之类的东西，这些都让node.js成为那种在客户端做很多处理的web程序的很好的选择。</p>
+<p>对unix工具的脚本化调用</p>
+<p>node.js现在还很年轻，它正在试图为自己重新发明各种软件，不过更好的办法是深入到现有的广阔的命令行工具世界里。Node.js拥有产生数以千计的子进程的能力，同时可以把这些子进程的输出以流的方式处理，这让它成为那种和现有软件寻求平衡时的很好的选择。</p>
+<p>流数据</p>
+<p>传统的web程序讲http请求和响应作为元事件处理。可事实是它们是流，很多很酷的node.js程序正是利用这个优点创建的。最牛的例子是实时解析上传文件，还在不同的数据层建立了代理。</p>
+<p>软件实时程序</p>
+<p>node.js另一个很大的方面是你可以很轻松的开发软实时系统。这是指那些像twitter，聊天软件，体彩或实时通讯网络的接口。</p>
+<p>但是这里你得注意了，因为JavaScript的动态垃圾回收特性，你得到的响应次数是依赖于你多频繁以及多久触发垃圾回收机制（此时你的程序停止了）。所以不要试图在node里建立硬实时系统，那需要永远一致的响应时间。Erlang在这一类的程序上应该是更好的选择。</p>
+<p>最后附上一篇 <a href="http://www.infoq.com/cn/news/2012/05/suggest-boss-nodejs，这是Node.js早期核心类库的贡献者Flexi所描述的优劣。" target="_blank" rel="external">http://www.infoq.com/cn/news/2012/05/suggest-boss-nodejs，这是Node.js早期核心类库的贡献者Flexi所描述的优劣。</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/JavaScript/">JavaScript</a><a href="/tags/nodejs/">nodejs</a><a href="/tags/nodejs使用场景/">nodejs使用场景</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2012/05/03/Node-js使用的场景/" data-title="Node.js使用的场景 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2012/05/05/这才是真正的网站可用性/" title="这才是真正的网站可用性">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  这才是真正的网站可用性</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2012/05/03/NodeJS入门/"  title="NodeJS入门">
+ <strong>NEXT:</strong><br/> 
+ <span>NodeJS入门
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#糟糕的用例："><span class="toc-number">1.</span> <span class="toc-text">糟糕的用例：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#好的用例"><span class="toc-number">2.</span> <span class="toc-text">好的用例</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		
+		
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>43</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/Books/" style="font-size: 13.33px;">Books</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript/" style="font-size: 20.00px;">JavaScript</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 16.67px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    var _bdId = '391982416296a0d54221f59fe35250d4';
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F" + _bdId +"'  type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'null', 'null');  
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+</html>

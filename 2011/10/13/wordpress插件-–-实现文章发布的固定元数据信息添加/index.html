@@ -1,0 +1,502 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="baidu_union_verify" content="d1952c66cf48912e21c18c7c581f382a">
+  <meta name="360-site-verification" content="67fbcc5a67f4c65c057315b28fa0b2c8" />
+<meta name="google-site-verification" content="2GzxQ0VtXwTSUdmGm6DzcmhTzM_I9QmzCb_pzpMzD88" />
+  
+    <title>wordpress插件 – 实现文章发布的固定元数据信息添加 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="[object Object]">
+    
+    <meta name="description" content="学习一款支付宝插件（http://www.izt.me/wordpress-alipay.html），在发布时候可以添加商品信息的功能。
+通过改动其中一个文件meta-box.php来实现自己想要的插件功能。
+WP插件个人通过实践以后总结为两步实现的套路：
+1、定义自己的php功能函数。
+2、通过w">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            var _bdId ='391982416296a0d54221f59fe35250d4';
+             hm.src = "//hm.baidu.com/hm.js?" + _bdId;
+             var s = document.getElementsByTagName("script")[0]; 
+             s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2011/10/13/wordpress插件-–-实现文章发布的固定元数据信息添加/" title="wordpress插件 – 实现文章发布的固定元数据信息添加" itemprop="url">wordpress插件 – 实现文章发布的固定元数据信息添加</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2011-10-13T07:16:45.000Z" itemprop="datePublished">10月 13 2011</time>
+    更新日期:<time datetime="2014-10-15T04:37:55.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>学习一款支付宝插件（<a href="http://www.izt.me/wordpress-alipay.html），在发布时候可以添加商品信息的功能。" target="_blank" rel="external">http://www.izt.me/wordpress-alipay.html），在发布时候可以添加商品信息的功能。</a></p>
+<p>通过改动其中一个文件meta-box.php来实现自己想要的插件功能。</p>
+<p>WP插件个人通过实践以后总结为两步实现的套路：</p>
+<p>1、定义自己的php功能函数。</p>
+<p>2、通过wp的api挂载此函数 。到此完工。</p>
+<p>一句话就是插件功能自己定义好函数，然后告知wp在合适的地方执行就行了。</p>
+<p><span id="more-457"></span></p>
+<p>于是实现一个在发布页面可以填写一个文章相关外链，并在查看文章页面使用到此链接。实践开始：</p>
+<p>先在wp的plugins目录新建子目录为 link-mutual，目录下建立一个文件 link-mutual.php。</p>
+<p>然后copy支付宝插件的meta-box.php的内容到link-mutual.php。</p>
+<p>剩下的就是增删改一些代码，保存后去启用插件就ok了：</p>
+<pre class="brush:php">&lt;?php
+
+/**
+  第二步通过API挂载自己的函数， 完成。函数定义语句可以放到调用之后。
+  API详情看wordpress官网介绍。如果仔细点，可以发现参数代表的意义。
+  所以我没去看官网的API，直接在原插件基础上分析并进行改删。
+  特别注意命名的唯一性，各插件命名是不能重复的，因为有报错过的经历。
+*/
+//发布或更新文章显示的表单域字段，调用函数vasee_create_meta_box
+add_action( 'admin_menu', 'vasee_create_meta_box' );
+//保存文章时候触发函数vasee_save_meta_data
+add_action( 'save_post', 'vasee_save_meta_data' );
+
+/**
+  第一步，以下的代码就是定义自己用到的一些帮助函数，及UI输出。
+*/
+//vasee-post-meta-boxes命名也要注意，因为没改到，插件虽然正常启用，但是页面没出现表单
+function vasee_create_meta_box() {
+    add_meta_box( 'vasee-post-meta-boxes','外链到Vasee', 'vasee_post_meta_boxes', 'post', 'normal', 'high' );
+    add_meta_box( 'vasee-page-meta-boxes', '外链到Vasee', 'vasee_page_meta_boxes', 'page', 'normal', 'high' );
+}
+//定义字段，比如以下就是个 input name='vasee_link' type="text"
+function vasee_post_boxes() {
+    $meta_boxes = array(
+        array(
+            "name"             =&gt; "vasee_link",
+            "title"            =&gt; "链接到Vasee",
+            "desc"             =&gt; "填写一个完整的Vasee活动页面，http://开头",
+            "type"             =&gt;    "text",
+            "capability"       =&gt; "manage_options"
+        )
+    );
+    return apply_filters( 'vasee_post_boxes', $meta_boxes );
+}
+function vasee_page_boxes() {
+    $meta_boxes = array(
+        array(
+            "name"             =&gt; "vasee_link",
+            "title"            =&gt; "链接到Vasee",
+            "desc"             =&gt; "填写一个完整的Vasee活动页面，http://开头",
+            "type"             =&gt;    "text",
+            "capability"       =&gt; "manage_options"
+        )
+    );
+    return apply_filters( 'vasee_page_boxes', $meta_boxes );
+}
+function vasee_post_meta_boxes() {
+    global $post;
+    $meta_boxes = vasee_post_boxes();
+?&gt;
+    &lt;table class="form-table"&gt;
+    &lt;?php foreach ( $meta_boxes as $meta ) :
+        $value = get_post_meta( $post-&gt;ID, $meta['name'], true );
+        if ( $meta['type'] == 'text' )
+            vasee_meta_text_input( $meta, $value );
+    endforeach; ?&gt;
+    &lt;/table&gt;
+&lt;?php
+}
+function vasee_page_meta_boxes() {
+    global $post;
+    $meta_boxes = vasee_page_boxes();
+?&gt;
+    &lt;table class="form-table"&gt;
+    &lt;?php foreach ( $meta_boxes as $meta ) :
+        $value = stripslashes( get_post_meta( $post-&gt;ID, $meta['name'], true ) );
+        if ( $meta['type'] == 'text' )
+            vasee_meta_text_input( $meta, $value );
+        endforeach; ?&gt;
+    &lt;/table&gt;
+&lt;?php
+}
+function vasee_meta_text_input( $args = array(), $value = false ) {
+    extract( $args ); ?&gt;
+    &lt;tr&gt;
+        &lt;th style="width:10%;"&gt;
+            &lt;label for="&lt;?php echo $name; ?&gt;"&gt;&lt;?php echo $title; ?&gt;&lt;/label&gt;
+        &lt;/th&gt;
+        &lt;td&gt;
+            &lt;input type="text" name="&lt;?php echo $name; ?&gt;" id="&lt;?php echo $name; ?&gt;" value="&lt;?php echo wp_specialchars( $value, 1 ); ?&gt;" size="30" tabindex="30" style="width: 97%;" /&gt;
+            &lt;input type="hidden" name="&lt;?php echo $name; ?&gt;_noncename" id="&lt;?php echo $name; ?&gt;_noncename" value="&lt;?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?&gt;" /&gt;
+            &lt;br /&gt;
+            &lt;p class="description"&gt;&lt;?php echo $desc; ?&gt;&lt;/p&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;?php
+}
+function vasee_save_meta_data( $post_id ) {
+    if ( 'page' == $_POST['post_type'] )
+        $meta_boxes = array_merge( vasee_page_boxes() );
+    else
+        $meta_boxes = array_merge( vasee_post_boxes() );
+        foreach ( $meta_boxes as $meta_box ) :
+        if ( !wp_verify_nonce( $_POST[$meta_box['name'] . '_noncename'], plugin_basename( __FILE__ ) ) )
+            return $post_id;
+        if ( 'page' == $_POST['post_type'] &amp;&amp; !current_user_can( 'edit_page', $post_id ) )
+            return $post_id;
+        elseif ( 'post' == $_POST['post_type'] &amp;&amp; !current_user_can( 'edit_post', $post_id ) )
+            return $post_id;
+        $data = stripslashes( $_POST[$meta_box['name']] );
+        if ( get_post_meta( $post_id, $meta_box['name'] ) == '' )
+            add_post_meta( $post_id, $meta_box['name'], $data, true );
+        elseif ( $data != get_post_meta( $post_id, $meta_box['name'], true ) )
+            update_post_meta( $post_id, $meta_box['name'], $data );
+        elseif ( $data == '' )
+            delete_post_meta( $post_id, $meta_box['name'], get_post_meta( $post_id, $meta_box['name'], true ) );
+    endforeach;
+}
+?&gt;</pre>  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/solution/">solution</a><a href="/tags/WordPress/">WordPress</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2011/10/13/wordpress插件-–-实现文章发布的固定元数据信息添加/" data-title="wordpress插件 – 实现文章发布的固定元数据信息添加 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2011/10/14/15个Linux-Wget下载实例用法说明/" title="15个Linux Wget下载实例用法说明">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  15个Linux Wget下载实例用法说明</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2011/10/12/使WordPress安装主题插件不再需要提供FTP信息/"  title="使WordPress安装主题插件不再需要提供FTP信息">
+ <strong>NEXT:</strong><br/> 
+ <span>使WordPress安装主题插件不再需要提供FTP信息
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		
+		
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>43</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/Books/" style="font-size: 13.33px;">Books</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript/" style="font-size: 20.00px;">JavaScript</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 16.67px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    var _bdId = '391982416296a0d54221f59fe35250d4';
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F" + _bdId +"'  type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'null', 'null');  
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+</html>

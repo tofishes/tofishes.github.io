@@ -1,0 +1,662 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="baidu_union_verify" content="d1952c66cf48912e21c18c7c581f382a">
+  <meta name="360-site-verification" content="67fbcc5a67f4c65c057315b28fa0b2c8" />
+<meta name="google-site-verification" content="2GzxQ0VtXwTSUdmGm6DzcmhTzM_I9QmzCb_pzpMzD88" />
+  
+    <title>了解JavaScript单元测试 – 自动化JavaScript代码跨浏览器测试 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="[object Object]">
+    
+    <meta name="description" content="来源：高效 JavaScript 单元测试 http://www.ibm.com/developerworks/cn/opensource/os-jstesting/index.html
+一个损坏的 JavaScript 代码示例
+Web 应用程序面临的一个最大挑战是支持不同版本的 Web 浏览器。">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            var _bdId ='391982416296a0d54221f59fe35250d4';
+             hm.src = "//hm.baidu.com/hm.js?" + _bdId;
+             var s = document.getElementsByTagName("script")[0]; 
+             s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2012/04/09/了解JavaScript单元测试-–-自动化JavaScript代码跨浏览器测试/" title="了解JavaScript单元测试 – 自动化JavaScript代码跨浏览器测试" itemprop="url">了解JavaScript单元测试 – 自动化JavaScript代码跨浏览器测试</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2012-04-09T08:39:41.000Z" itemprop="datePublished">4月 9 2012</time>
+    更新日期:<time datetime="2014-10-15T04:37:55.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>来源：高效 JavaScript 单元测试 <a href="http://www.ibm.com/developerworks/cn/opensource/os-jstesting/index.html" target="_blank" rel="external">http://www.ibm.com/developerworks/cn/opensource/os-jstesting/index.html</a></p>
+<p><a name="N1006D"><span class="atitle">一个损坏的 JavaScript 代码示例</span></a></p>
+<p>Web 应用程序面临的一个最大挑战是支持不同版本的 Web 浏览器。能在 Safari 上运行的 JavaScript 代码不一定能在 Windows® Internet Explorer (IE)、Firefox 或 Google Chrome 上运行。这个挑战的根源是呈现层中的 JavaScript 代码从一开始就没有进行测试。如果没有对代码进行单元测试，那么在升级或支持新浏览器后，组织可能需要花钱反复测试 Web 应用程序。本文将展示如何通过高效的 JavaScript 代码单元测试降低测试成本。</p>
+<p><span id="more-671"></span></p>
+<p>一个常见用例是登录表单 JavaScript 验证。考虑 <a href="listing1">清单 1</a> 中的表单。</p>
+<p><a name="listing1"><strong>清单 1. 登录表单</strong></a></p>
+<pre class="brush:xml">**&lt;form&gt;
+    &lt;table&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Username&lt;/td&gt;
+            &lt;td&gt;&lt;input type="text" id="username"/&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span id="usernameMessage"&gt;&lt;/span&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Password&lt;/td&gt;
+            &lt;td&gt;&lt;input type="password" id="password"/&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span id="passwordMessage"&gt;&lt;/span&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;&lt;input type="button" onclick="new appnamespace.
+            ApplicationUtil().validateLoginForm()" value="Submit"/&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/table&gt;
+&lt;/form&gt;**</pre>
+
+<hr>
+<p>这个表单很简单，仅包含用户名和密码字段。单击提交按钮时，将通过 <code>ApplicationUtil</code> 执行一个特定的表单验证。以下是负责验证 HTML 表单的 JavaScript 对象。<a href="#listing2">清单 2</a> 显示了 <code>ApplicationUtil</code> 对象的代码。</p>
+<p><a name="listing2"><strong>清单 2. 损坏的 ApplicationUtil 对象代码</strong></a></p>
+<pre class="brush:js">appnamespace = {};
+
+appnamespace.ApplicationUtil = function() {};
+
+appnamespace.ApplicationUtil.prototype.validateLoginForm =  function(){
+    var error = true;
+    document.getElementById("usernameMessage").innerText = "";
+    document.getElementById("passwordMessage").innerText = "";    
+
+    if (!document.getElementById("username").value) {
+        document.getElementById("usernameMessage").innerText =
+        "This field is required";
+        error = false;
+    }
+
+    if (!document.getElementById("password").value) {
+        document.getElementById("passwordMessage").innerText =
+        "This field is required";
+        error = false;
+    }        
+
+    return error;
+};</pre>
+
+<p>在清单 2 中，<code>ApplicationUtil</code> 对象提供一个简单验证：用户名和密码字段都已填充。如果某个字段为空，就会显示一条错误消息：<code>This field is required</code>。</p>
+<p>上面的代码能够在 Internet Explorer 8 和 Safari</p>
+<p>5.1 上工作，但无法在 Firefox 3.6 上工作，原因是 Firefox 不支持 <code>innerText</code> 属性。通常，（上述代码和其他类似 JavaScript 代码中的）主要问题是不容易发现编写的 JavaScript 代码是不是跨浏览器兼容的。</p>
+<p>这个问题的一个解决方案是进行自动化单元测试，检查代码是不是跨浏览器兼容。</p>
+<div class="ibm-alternate-rule"><br><br><em> </em> *<br><br></div>
+
+<p><a href="#ibm-pcon">回页首</a></p>
+<p><a name="N100B8"><span class="atitle"></span></a></p>
+<p>JsTestDriver</p>
+<p>JsTestDriver library 是最好的 JavaScript 单元测试框架之一，它为 JavaScript 代码提供了跨浏览器测试。<a href="#fig1">图 1</a> 展示了 JsTestDriver 的架构。</p>
+<p><a name="fig1"><strong>图 1. JsTestDriver 架构</strong></a></p>
+<p><img src="http://www.ibm.com/developerworks/cn/opensource/os-jstesting/figure1.gif" alt="JsTestDriver 架构"></p>
+<div class="ibm-container ibm-alt-header dw-container-sidebar"><br><br>## jsTestDriver 是开源项目<br><br><div class="ibm-container-body"><br><br>jsTestDriver 是 <a href="http://www.opensource.org/licenses/Apache-2.0" target="_blank" rel="external">Apache 2.0 许可</a> 下的一个开源项目，托管在 Google Code 上，后者是一个类似于 SourceForge 的项目存储库。只要使用 Open Source<br><br>Initiative 批准的 <a href="http://www.opensource.org/licenses/alphabetical" target="_blank" rel="external">许可</a>，开发人员就能在这个存储库中创建和管理公共项目。<br><br>还有许多其他 JavaScript 单元测试工具，请参见下面的 <a href="#resources">参考资料</a> 部分中的其他工具，比如 Dojo Objective Harness<br><br>(DOH)。<br><br></div><br></div>
+
+<p>捕获不同的浏览器之后，服务器会负责将 JavaScript 测试用例运行程序代码加载到浏览器中。可以通过命令行捕获浏览器，也可以通过将浏览器指向服务器 URL 来捕获浏览器。一旦捕获到浏览器，该浏览器就被称为从属浏览器。服务器可以加载 JavaScript 代码，在每个浏览器上执行测试用例，然后将结果返回给客户端。</p>
+<p>客户端（命令行）需要以下两个主要项目：</p>
+<ol>
+<li>JavaScript 文件，即源文件和测试文件</li>
+<li>配置文件，用于组织源文件和测试文件的加载</li>
+</ol>
+<p>这个架构比较灵活，允许单个服务器从网络中的其他机器捕获任意数量的浏览器。例如，如果您的代码在 Linux 上运行但您想针对另一个 Windows 机器上的 Microsoft Internet Explorer 运行您的测试用例，那么这个架构很有用。</p>
+<p>要使用 JsTestDriver 库，请先下载最新版的 <a href="http://js-test-driver.googlecode.com/files/JsTestDriver-1.3.2.jar" target="_blank" rel="external">JsTestDriver 1.3.2</a>。</p>
+<div class="ibm-alternate-rule"><br><br><em> </em> *<br><br></div>
+
+<p><a href="#ibm-pcon">回页首</a></p>
+<p><a name="N1010B"><span class="atitle">编写单元测试代码</span></a></p>
+<p>现在开始编写 JavaScript 测试用例。为简单起见，我将测试以下用例：</p>
+<ul>
+<li>用户名和密码字段均为空。</li>
+<li>用户名为空，密码不为空。</li>
+<li>用户名不为空，密码为空。</li>
+</ul>
+<p><a href="#listing3">清单 3</a> 显示了表示 TestCase 对象的 <code>ApplicationUtilTest</code> 对象的部分代码。</p>
+<p><a name="listing3"><strong>清单 3. ApplicationUtilTest 对象代码的一部分</strong></a></p>
+<p>&nbsp;</p>
+<pre class="brush:js">ApplicationUtilTest = TestCase("ApplicationUtilTest");
+
+ApplicationUtilTest.prototype.setUp = function () {
+/*:DOC += &lt;FORM action=""&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;Username&lt;/td&gt;&lt;td&gt;
+&lt;input type="text" id="username"/&gt;&lt;/td&gt;&lt;td&gt;&lt;span id="usernameMessage"&gt;
+&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Password&lt;/td&gt;&lt;td&gt;
+&lt;input type="password" id="password"/&gt;&lt;/td&gt;&lt;td&gt;&lt;span id="passwordMessage"
+&gt;&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/FORM&gt;*/
+};
+
+ApplicationUtilTest.prototype.testValidateLoginFormBothEmpty = function () {
+    var applicationUtil = new appnamespace.ApplicationUtil();
+
+    /* Simulate empty user name and password */
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";    
+
+    applicationUtil.validateLoginForm();
+
+    assertEquals("Username is not validated correctly!", "This field is required",
+    document.getElementById("usernameMessage").innerHTML);
+    assertEquals("Password is not validated correctly!", "This field is required",
+    document.getElementById("passwordMessage").innerHTML);
+};</pre>
+
+<p><code>ApplicationUtilTest</code> 对象通过 JsTestDriver <code>TestCase</code> 对象创建。如果您熟悉 JUnit 框架，那么您肯定熟悉 <code>setUp</code> 和 <code>testXXX</code> 方法。<code>setUp</code> 方法用于初始化测试用例。对于本例，我使用该方法来声明一个 HTML 片段，该片段将用于其他测试用例方法。</p>
+<p><code>DOC</code> 注释是一个 JsTestDriver 惯用语，可以用于轻松声明一个 HTML 片段。</p>
+<p>在 <code>testValidateLoginFormBothEmpty</code> 方法中，创建了一个 <code>ApplicationUtil</code> 对象，并在测试用例方法中使用该对象。然后，代码通过检索用户名和密码的 DOM 元素并将它们的值设置为空值来模拟输入空用户名和密码。可以调用 <code>validateLoginForm</code> 方法来执行实际表单验证。最后，将</p>
+<p>调用 <code>assertEquals</code> 来确保 <code>usernameMessage</code> 和 <code>passwordMessage</code> span 元素中的消息是正确的，即：<code>This field is required</code>。</p>
+<p>在 JsTestDriver 中，可以使用以下构件：</p>
+<ul>
+<li><code>fail(&quot;msg&quot;)</code>：表明测试一定会失败，消息参数将显示为一条错误消息。</li>
+<li><code>assertTrue(&quot;msg&quot;, actual)</code>：断定实际参数正确。否则，消息参数将显示为一条错误消息。</li>
+<li><code>assertFalse(&quot;msg&quot;, actual)</code>：断定实际参数错误。否则，消息参数将显示为一条错误消息。</li>
+<li><code>assertSame(&quot;msg&quot;, expected, actual)</code>：断定实际参数与预期参数相同。否则，消息参数将显示为一条错误消息。</li>
+<li><code>assertNotSame(&quot;msg&quot;, expected, actual)</code>：断定实际参数与预期参数不相同。否则，消息参数将显示为一条错误消息。</li>
+<li><code>assertNull(&quot;msg&quot;, actual)</code>：断定参数为空。否则，消息参数将显示为一条错误消息。</li>
+<li><code>assertNotNull(&quot;msg&quot;, actual)</code>：断定实际参数不为空。否则，消息参数将显示为一条错误消息。</li>
+</ul>
+<p>其他方法的代码包含其他测试用例。<a href="#listing4">清单 4</a> 显示了测试用例对象的完整代码。</p>
+<p><a name="listing4"><strong>清单 4. ApplicationUtil 对象完整代码</strong></a></p>
+<pre class="brush:js">**ApplicationUtilTest = TestCase("ApplicationUtilTest");
+
+ApplicationUtilTest.prototype.setUp = function () {
+/*:DOC += &lt;FORM action=""&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;Username&lt;/td&gt;&lt;td&gt;
+&lt;input type="text" id="username"/&gt;&lt;/td&gt;&lt;td&gt;&lt;span id="usernameMessage"&gt;
+&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Password&lt;/td&gt;&lt;td&gt;
+&lt;input type="password" id="password"/&gt;&lt;/td&gt;&lt;td&gt;&lt;span id="passwordMessage"
+&gt;&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/FORM&gt;*/
+};
+
+ApplicationUtilTest.prototype.testValidateLoginFormBothEmpty = function () {
+    var applicationUtil = new appnamespace.ApplicationUtil();
+
+    /* Simulate empty user name and password */
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";    
+
+    applicationUtil.validateLoginForm();
+
+    assertEquals("Username is not validated correctly!", "This field is required",
+    document.getElementById("usernameMessage").innerHTML);
+    assertEquals("Password is not validated correctly!", "This field is required",
+    document.getElementById("passwordMessage").innerHTML);
+};
+
+ApplicationUtilTest.prototype.testValidateLoginFormWithEmptyUserName = function () {
+    var applicationUtil = new appnamespace.ApplicationUtil();
+
+    /* Simulate empty user name and password */
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "anyPassword";    
+
+    applicationUtil.validateLoginForm();
+
+    assertEquals("Username is not validated correctly!",
+    "This field is required", document.getElementById("usernameMessage").innerHTML);
+    assertEquals("Password is not validated correctly!",
+    "", document.getElementById("passwordMessage").innerHTML);
+};
+
+ApplicationUtilTest.prototype.testValidateLoginFormWithEmptyPassword = function () {
+    var applicationUtil = new appnamespace.ApplicationUtil();
+
+    document.getElementById("username").value = "anyUserName";
+    document.getElementById("password").value = "";    
+
+    applicationUtil.validateLoginForm();
+
+    assertEquals("Username is not validated correctly!",
+    "", document.getElementById("usernameMessage").innerHTML);
+    assertEquals("Password is not validated correctly!",
+    "This field is required", document.getElementById("passwordMessage").
+    innerHTML);
+};**</pre>
+
+<hr>
+<p>&nbsp;</p>
+<div class="ibm-alternate-rule"><br><br><em> </em> *<br><br></div>
+
+<p><a href="#ibm-pcon">回页首</a></p>
+<p><a name="N101BA"><span class="atitle">配置用于测试的不同浏览器</span></a></p>
+<p>测试 JavaScript 代码的一个推荐实践是将 JavaScript 源代码和测试代码放置在不同的文件夹中。对于 <a href="#fig2">图 2</a> 中的示例，我将 JavaScript 源文件夹命名为 &#8220;js-src&#8221;，将 JavaScript 测试文件夹命名为 &#8220;js-test&#8221;，它们都位于 &#8220;js&#8221; 父文件夹下。</p>
+<p><a name="fig2"><strong>图 2. JavaScript 测试文件夹结构</strong></a></p>
+<p><img src="http://www.ibm.com/developerworks/cn/opensource/os-jstesting/figure2.jpg" alt="JavaScript 测试文件夹结构"></p>
+<p>组织好源和测试文件夹后，必须提供配置文件。默认情况下，<code>JsTestDriver</code> 运行程序会寻找名为 jsTestDriver.conf 的配置文件。您可以从命令行更改配置文件名称。<a href="#listing5">清单 5</a> 显示了 <code>JsTestDriver</code> 配置文件的内容。</p>
+<p><a name="listing5"><strong>清单 5. JsTestDriver 配置文件内容</strong></a></p>
+<pre class="displaycode">server: http://localhost:9876
+
+load:
+  - js-src/*.js
+  - js-test/*.js</pre>
+
+<p>配置文件采用 YAML 格式。<code>server</code> 指令指定测试服务器的地址，<code>load</code> 指令指出了将哪些 JavaScript 文件加载到浏览器中以及加载它们的顺序。</p>
+<p>现在，我们将在 IE、Firefox 和 Safari 浏览器上运行测试用例类。</p>
+<p>要运行测试用例类，需要启动服务器。您可以使用以下命令行启动 <code>JsTestDriver</code> 服务器：</p>
+<pre class="brush:shell">java -jar JsTestDriver-1.3.2.jar --port 9876 --browser "[Firefox Path]","[IE Path]","[Safari Path]"</pre>
+
+<p>使用这个命令行，服务器将以 Port 9876 启动，捕获您的机器上的 Firefox、IE 和 Safari 浏览器。</p>
+<p>启动并捕获浏览器后，可以通过以下命令行运行测试用例类：</p>
+<pre class="brush:shell">java -jar JsTestDriver-1.3.2.jar --tests all</pre>
+
+<p>运行命令后，您将看到第一轮结果，如 <a href="#listing6">清单 6</a> 所示。</p>
+<p><a name="listing6"><strong>清单 6. 第一轮结果</strong></a></p>
+<pre class="displaycode">Total 9 tests (Passed: 6; Fails: 3; Errors: 0) (16.00 ms)
+  Firefox 3.6.18 Windows: Run 3 tests (Passed: 0; Fails: 3; Errors 0) (8.00 ms)
+    ApplicationUtilTest.testValidateLoginFormBothEmpty failed (3.00 ms):
+    AssertError: Username is not validated correctly! expected "This field
+    is required" but was "" Error("Username is not validated correctly!
+    expected \"This field is required\" but was \"\"")@:0()@http://localhost
+    :9876/test/js-test/TestApplicationUtil.js:16
+
+    ApplicationUtilTest.testValidateLoginFormWithEmptyUserName failed (3.00 ms):
+    AssertError: Username is not validated correctly! expected "This field is
+    required" but was "" Error("Username is not validated correctly! expected
+    \"This field is required\" but was \"\"")@:0()@http://localhost:9876/test
+    /js-test/TestApplicationUtil.js:29
+
+    ApplicationUtilTest.testValidateLoginFormWithEmptyPassword failed (2.00 ms):
+    AssertError: Password is not validated correctly! expected "This field is
+    required" but was "" Error("Password is not validated correctly! expected
+    \"This field is required\" but was \"\"")@:0()@http://localhost:9876/test/
+    js-test/TestApplicationUtil.js:42
+
+  Safari 534.50 Windows: Run 3 tests (Passed: 3; Fails: 0; Errors 0) (2.00 ms)
+  Microsoft Internet Explorer 8.0 Windows: Run 3 tests (Passed: 3; Fails: 0;
+  Errors 0) (16.00 ms)
+Tests failed: Tests failed. See log for details.</pre>
+
+<p>注意，在清单 6 中，主要问题出在 Firefox 上。测试在 Internet Explorer 和 Safari 上均可顺利运行。</p>
+<div class="ibm-alternate-rule"><br><br><em> </em> *<br><br></div>
+
+<p><a href="#ibm-pcon">回页首</a></p>
+<p><a name="N1022D"><span class="atitle">修复 JavaScript 代码并重新运行测试用例</span></a></p>
+<p>我们来修复损坏的 JavaScript 代码。我们将使用 <code>innerHTML</code> 替代 <code>innerText</code>。<a href="#listing7">清单 7</a> 显示了修复后的 <code>ApplicationUtil</code> 对象代码。</p>
+<p><a name="listing7"><strong>清单 7. 修复后的 ApplicationUtil 对象代码</strong></a></p>
+<pre class="brush:js">appnamespace = {};
+
+appnamespace.ApplicationUtil = function() {};
+
+appnamespace.ApplicationUtil.prototype.validateLoginForm =  function(){
+    var error = true;
+    document.getElementById("usernameMessage").innerHTML = "";
+    document.getElementById("passwordMessage").innerHTML = "";    
+
+    if (!document.getElementById("username").value) {
+        document.getElementById("usernameMessage").innerHTML =
+        "This field is required";
+        error = false;
+    }
+
+    if (!document.getElementById("password").value) {
+        document.getElementById("passwordMessage").innerHTML =
+        "This field is required";
+        error = false;
+    }        
+
+    return error;
+};</pre>
+
+<p>使用 <code>--test all</code> 命令行参数重新运行测试用例对象。<a href="#listing8">清单 8</a> 显示了第二轮运行结果。</p>
+<p><a name="listing8"><strong>清单 8. 第二轮运行结果</strong></a></p>
+<pre class="displaycode">Total 9 tests (Passed: 9; Fails: 0; Errors: 0) (9.00 ms)
+  Firefox 3.6.18 Windows: Run 3 tests (Passed: 3; Fails: 0; Errors 0) (9.00 ms)
+  Safari 534.50 Windows: Run 3 tests (Passed: 3; Fails: 0; Errors 0) (5.00 ms)
+  Microsoft Internet Explorer 8.0 Windows: Run 3 tests (Passed: 3; Fails: 0; Errors 0)
+  (0.00 ms)</pre>
+
+<p>如清单 8 所示，JavaScript 代码现在在 IE、Firefox 和 Safari 上都能正常运行。</p>
+<div class="ibm-alternate-rule"><br><br><em> </em> *<br><br></div>
+
+<p>&nbsp;</p>
+<p><a name="N10269"><span class="atitle">结束语</span></a></p>
+<p>在本文中，您了解了如何使用一个最强大的 JavaScript 单元测试工具 (JsTestDriver) 在不同的浏览器上测试 JavaScript 应用程序代码。还了解了什么是 JsTestDriver，如何配置它，以及如何在 Web 应用程序中使用它来确保应用程序的 JavaScript 代码的质量和可靠性。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/JavaScript/">JavaScript</a><a href="/tags/javascript单元测试/">javascript单元测试</a><a href="/tags/js跨浏览器测试/">js跨浏览器测试</a><a href="/tags/单元测试/">单元测试</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2012/04/09/了解JavaScript单元测试-–-自动化JavaScript代码跨浏览器测试/" data-title="了解JavaScript单元测试 – 自动化JavaScript代码跨浏览器测试 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2012/04/10/最炫的民族风各种同步MV版本/" title="最炫的民族风各种同步MV版本">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  最炫的民族风各种同步MV版本</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2012/04/04/概念文：百万级访问量网站的技术准备工作/"  title="概念文：百万级访问量网站的技术准备工作">
+ <strong>NEXT:</strong><br/> 
+ <span>概念文：百万级访问量网站的技术准备工作
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		
+		
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>43</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/Books/" style="font-size: 13.33px;">Books</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript/" style="font-size: 20.00px;">JavaScript</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 16.67px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    var _bdId = '391982416296a0d54221f59fe35250d4';
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F" + _bdId +"'  type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'null', 'null');  
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+</html>

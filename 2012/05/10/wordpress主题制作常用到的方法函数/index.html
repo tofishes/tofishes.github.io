@@ -1,0 +1,571 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="baidu_union_verify" content="d1952c66cf48912e21c18c7c581f382a">
+  <meta name="360-site-verification" content="67fbcc5a67f4c65c057315b28fa0b2c8" />
+<meta name="google-site-verification" content="2GzxQ0VtXwTSUdmGm6DzcmhTzM_I9QmzCb_pzpMzD88" />
+  
+    <title>wordpress主题制作常用到的方法函数 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="[object Object]">
+    
+    <meta name="description" content="页面编码：&amp;lt;meta charset=&amp;#8221;&amp;lt;?php bloginfo( &amp;#8216;charset&amp;#8217; ); ?&amp;gt;&amp;#8221; /&amp;gt;;
+页面标题：wp_title( &amp;#8216;|&amp;#8217;, true, &amp;#8216;right&amp;#8217;">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            var _bdId ='391982416296a0d54221f59fe35250d4';
+             hm.src = "//hm.baidu.com/hm.js?" + _bdId;
+             var s = document.getElementsByTagName("script")[0]; 
+             s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2012/05/10/wordpress主题制作常用到的方法函数/" title="wordpress主题制作常用到的方法函数" itemprop="url">wordpress主题制作常用到的方法函数</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2012-05-10T13:49:58.000Z" itemprop="datePublished">5月 10 2012</time>
+    更新日期:<time datetime="2014-10-15T04:37:55.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p><em>页面</em>编码：&lt;meta charset=&#8221;&lt;?php bloginfo( &#8216;charset&#8217; ); ?&gt;&#8221; /&gt;;</p>
+<p>页面标题：wp_title( &#8216;|&#8217;, true, &#8216;right&#8217; );</p>
+<p>博客名称：bloginfo( &#8216;name&#8217; );</p>
+<p>博客描述：&lt;?php bloginfo( &#8216;description&#8217; ); ?&gt;</p>
+<p>博客样式：&lt;link rel=&#8221;stylesheet&#8221; media=&#8221;all&#8221; href=&#8221;&lt;?php bloginfo( &#8216;stylesheet_url&#8217; ); ?&gt;&#8221; /&gt;</p>
+<p>博客主页地址：&lt;a href=&#8221;&lt;?php echo home_url( &#8216;/&#8217; ); ?&gt;&#8221;&gt;&lt;/a&gt;</p>
+<p>博客主题地址：&lt;link rel=&#8221;shortcut icon&#8221; type=&#8221;image/x-icon&#8221; href=&#8221;&lt;?php bloginfo(&#8216;template_url&#8217;)?&gt;/img-res/favicon.ico&#8221; /&gt;</p>
+<p>博客导航，一步生成 :&lt;?php wp_nav_menu( array( &#8216;container_class&#8217; =&gt; &#8216;menu-header&#8217;, &#8216;theme_location&#8217; =&gt; &#8216;primary&#8217; ) ); ?&gt;</p>
+<p>全局当前页码：global $page, $paged;</p>
+<p>wordpress官方列举的全局变量列表： <a href="http://codex.wordpress.org/Global_Variables" target="_blank" rel="external">http://codex.wordpress.org/Global_Variables</a></p>
+<p><span id="more-756"></span></p>
+<p>自定义输出分类：</p>
+<pre class="brush:php">&lt;?php
+    $args=array(
+        'orderby' =&gt; 'name',
+        'order' =&gt; 'ASC'
+    );
+    $categories = get_categories($args);
+    foreach($categories as $category) {
+        echo '&lt;a href="' . get_category_link( $category-&gt;term_id ) . '" title="' . sprintf( __( "View all posts in %s" ), $category-&gt;name ) . '" ' . '&gt;' . $category-&gt;name.'&lt;/a&gt;';
+    }
+?&gt;</pre>
+
+<p>搜索表单一步生成：&lt;?php get_search_form(); ?&gt;</p>
+<p>在Loop中自定义文章显示：</p>
+<pre class="brush:php">&lt;article  id="post-&lt;?php the_ID(); ?&gt;" &lt;?php post_class(); ?&gt;&gt;
+    &lt;h2&gt;&lt;a href="&lt;?php the_permalink(); ?&gt;" title="&lt;?php printf( esc_attr__( 'Permalink to %s', 'twentyten' ), the_title_attribute( 'echo=0' ) ); ?&gt;" rel="bookmark"&gt;&lt;?php the_title(); ?&gt;&lt;/a&gt;&lt;/h2&gt;
+
+    &lt;section&gt;
+        &lt;?php if ( is_archive() || is_search() ) : // Only display excerpts for archives and search. ?&gt;
+            &lt;?php the_excerpt(); ?&gt;
+        &lt;?php else : ?&gt;
+            &lt;?php the_content( __( 'Continue reading &lt;span class="meta-nav"&gt;&amp;rarr;&lt;/span&gt;', 'twentyten' ) ); ?&gt;
+            &lt;?php wp_link_pages( array( 'before' =&gt; '&lt;div class="page-link"&gt;' . __( 'Pages:', 'twentyten' ), 'after' =&gt; '&lt;/div&gt;' ) ); ?&gt;
+        &lt;?php endif; ?&gt;
+
+        &lt;p class="t-c"&gt;
+            &lt;a class="btn" href="&lt;?php the_permalink(); ?&gt;"&gt;继续阅读~&lt;/a&gt;
+            &lt;a class="btn" href="&lt;?php comments_link(); ?&gt;"&gt;&lt;?php comments_number( '参与评论~', '评论(%)', '评论(%)' ); ?&gt;&lt;/a&gt;
+        &lt;/p&gt;
+    &lt;/section&gt;
+
+    &lt;aside&gt;
+        &lt;?php edit_post_link( __( '[Edit]', 'twentyten' ), '&lt;span class="r-f"&gt;', '&lt;/span&gt;' ); ?&gt;
+        &lt;time&gt;&lt;?php the_time('Y.m.d');?&gt;&lt;/time&gt;
+        &lt;span&gt;分类: &lt;?php the_category(', '); ?&gt;&lt;/span&gt;
+        &lt;span&gt;标签: &lt;?php the_tags('',',',''); ?&gt;
+        &lt;/span&gt;
+    &lt;/aside&gt;
+&lt;/article&gt;</pre>
+
+<p>不用插件，自己实现数字显示的分页页码：</p>
+<pre class="brush:php">&lt;?php if ( $wp_query-&gt;max_num_pages &gt; 1 ) : ?&gt;
+&lt;p class="page panel-light"&gt;
+&lt;?php
+    $args = array(
+        'base'         =&gt; '%_%',
+        'format'       =&gt; '/page/%#%',
+        'total'        =&gt; 1,
+        'current'      =&gt; $page,
+        'end_size'     =&gt; 2,
+        'mid_size'     =&gt; 5,
+        'prev_next'    =&gt; false,
+     );
+    echo paginate_links( $args )
+?&gt;
+&lt;/p&gt;&lt;?php endif; ?&gt;</pre>
+
+<p>自定义搜索表单，在主题文件夹下新建名为searchform.php的文件，即可替换wp默认表单：</p>
+<pre class="brush:php">&lt;form role="search" method="get" id="searchform" action="&lt;?php echo home_url( '/' ); ?&gt;"&gt;
+    &lt;label class="screen-reader-text" for="s" /&gt;搜索：&lt;/label&gt;
+    &lt;input type="text" value="&lt;?php the_search_query(); ?&gt;" name="s" id="s" /&gt;
+    &lt;input type="submit" id="searchsubmit" title="搜索" value="" /&gt;
+&lt;/form&gt;</pre>
+
+<p>分页，不需要插件，利用wordpress自带的函数paginate_links实现分页显示，再封装一下作为新函数，在functions.php中添加：</p>
+<pre>//自定义的分页函数，可以用于各种页面
+function show_pagination() {
+    global $wp_query, $wp_rewrite, $paged;
+    $current = max(1, $paged); 
+
+    $pagination = array(
+        'base' =&gt; @add_query_arg('paged','%#%'),
+        'format' =&gt; '',
+        'total' =&gt; $wp_query-&gt;max_num_pages, //必须，总页数，默认为1是不会显示页码的
+        'current' =&gt; $current,
+        'end_size'     =&gt; 2,
+        'mid_size'     =&gt; 5,
+        'prev_next'    =&gt; false
+    ); 
+
+    if( $wp_rewrite-&gt;using_permalinks() )
+        $pagination['base'] = user_trailingslashit( trailingslashit( remove_query_arg('s',get_pagenum_link(1) ) ) . 'page/%#%/', 'paged'); 
+
+    if( !empty($wp_query-&gt;query_vars['s']) )
+        $pagination['add_args'] = array('s'=&gt;get_query_var('s')); 
+
+    if ( $wp_query-&gt;max_num_pages &gt; 1 ) :
+        echo '&lt;p class="pager panel-light"&gt;'.paginate_links($pagination).'&lt;/p&gt;';
+    endif;
+}</pre>
+
+<p>获取评论者头像Avatar的图片地址，而不是直接获取标签，修改get_avatar()为get_avatar_url()，加入到functions.php文件：</p>
+<pre>if ( !function_exists( 'get_avatar_url' ) ) :
+
+function get_avatar_url( $id_or_email, $size = '96', $default = '', $alt = false ) {
+    if ( ! get_option('show_avatars') )
+        return false;
+
+    if ( false === $alt)
+        $safe_alt = '';
+    else
+        $safe_alt = esc_attr( $alt );
+
+    if ( !is_numeric($size) )
+        $size = '96';
+
+    $email = '';
+    if ( is_numeric($id_or_email) ) {
+        $id = (int) $id_or_email;
+        $user = get_userdata($id);
+        if ( $user )
+            $email = $user-&gt;user_email;
+    } elseif ( is_object($id_or_email) ) {
+        // No avatar for pingbacks or trackbacks
+        $allowed_comment_types = apply_filters( 'get_avatar_comment_types', array( 'comment' ) );
+        if ( ! empty( $id_or_email-&gt;comment_type ) &amp;&amp; ! in_array( $id_or_email-&gt;comment_type, (array) $allowed_comment_types ) )
+            return false;
+
+        if ( !empty($id_or_email-&gt;user_id) ) {
+            $id = (int) $id_or_email-&gt;user_id;
+            $user = get_userdata($id);
+            if ( $user)
+                $email = $user-&gt;user_email;
+        } elseif ( !empty($id_or_email-&gt;comment_author_email) ) {
+            $email = $id_or_email-&gt;comment_author_email;
+        }
+    } else {
+        $email = $id_or_email;
+    }
+
+    if ( empty($default) ) {
+        $avatar_default = get_option('avatar_default');
+        if ( empty($avatar_default) )
+            $default = 'mystery';
+        else
+            $default = $avatar_default;
+    }
+
+    if ( !empty($email) )
+        $email_hash = md5( strtolower( $email ) );
+
+    if ( is_ssl() ) {
+        $host = 'https://secure.gravatar.com';
+    } else {
+        if ( !empty($email) )
+            $host = sprintf( "http://%d.gravatar.com", ( hexdec( $email_hash[0] ) % 2 ) );
+        else
+            $host = 'http://0.gravatar.com';
+    }
+
+    if ( 'mystery' == $default )
+        $default = "$host/avatar/ad516503a11cd5ca435acc9bb6523536?s={$size}"; // ad516503a11cd5ca435acc9bb6523536 == md5('unknown@gravatar.com')
+    elseif ( 'blank' == $default )
+        $default = includes_url('images/blank.gif');
+    elseif ( !empty($email) &amp;&amp; 'gravatar_default' == $default )
+        $default = '';
+    elseif ( 'gravatar_default' == $default )
+        $default = "$host/avatar/s={$size}";
+    elseif ( empty($email) )
+        $default = "$host/avatar/?d=$default&amp;s={$size}";
+    elseif ( strpos($default, 'http://') === 0 )
+        $default = add_query_arg( 's', $size, $default );
+
+    if ( !empty($email) ) {
+        $out = "$host/avatar/";
+        $out .= $email_hash;
+        $out .= '?s='.$size;
+        $out .= '&amp;d=' . urlencode( $default );
+
+        $rating = get_option('avatar_rating');
+        if ( !empty( $rating ) )
+            $out .= "&amp;r={$rating}";
+
+        $avatar = $out;
+    } else {
+        $avatar = $default;
+    }
+
+    return apply_filters('get_avatar', $avatar, $id_or_email, $size, $default, $alt);
+}
+endif;</pre>  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/code/">code</a><a href="/tags/WordPress/">WordPress</a><a href="/tags/wordpress-theme/">wordpress theme</a><a href="/tags/wordpress主题/">wordpress主题</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2012/05/10/wordpress主题制作常用到的方法函数/" data-title="wordpress主题制作常用到的方法函数 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2012/05/31/ToFishes系列jQuery插件之jSuggest-–-搜索框输入框自动下拉提示内容补全插件/" title="ToFishes系列jQuery插件之jSuggest – 搜索框输入框自动下拉提示内容补全插件">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  ToFishes系列jQuery插件之jSuggest – 搜索框输入框自动下拉提示内容补全插件</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2012/05/05/这才是真正的网站可用性/"  title="这才是真正的网站可用性">
+ <strong>NEXT:</strong><br/> 
+ <span>这才是真正的网站可用性
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		
+		
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>43</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/Books/" style="font-size: 13.33px;">Books</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript/" style="font-size: 20.00px;">JavaScript</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 16.67px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    var _bdId = '391982416296a0d54221f59fe35250d4';
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F" + _bdId +"'  type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'null', 'null');  
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+</html>

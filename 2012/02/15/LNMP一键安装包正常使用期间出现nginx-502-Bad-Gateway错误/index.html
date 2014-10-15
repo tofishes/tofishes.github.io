@@ -1,0 +1,434 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="baidu_union_verify" content="d1952c66cf48912e21c18c7c581f382a">
+  <meta name="360-site-verification" content="67fbcc5a67f4c65c057315b28fa0b2c8" />
+<meta name="google-site-verification" content="2GzxQ0VtXwTSUdmGm6DzcmhTzM_I9QmzCb_pzpMzD88" />
+  
+    <title>LNMP一键安装包正常使用期间出现nginx 502 Bad Gateway错误 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="[object Object]">
+    
+    <meta name="description" content="最近站点隔一两天就会出现nginx 502 Bad Gateway错误，无法访问，以前都好好的，莫非是流量上来了的缘故？
+因为站点是用LNMP一键安装包搭建的环境，所以google了下这方面的情况，得到两个可能的解决方案，试试看了。
+最后验证第三种方案相当靠谱，用了以后就没有出现过502现象。
+
+第">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            var _bdId ='391982416296a0d54221f59fe35250d4';
+             hm.src = "//hm.baidu.com/hm.js?" + _bdId;
+             var s = document.getElementsByTagName("script")[0]; 
+             s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2012/02/15/LNMP一键安装包正常使用期间出现nginx-502-Bad-Gateway错误/" title="LNMP一键安装包正常使用期间出现nginx 502 Bad Gateway错误" itemprop="url">LNMP一键安装包正常使用期间出现nginx 502 Bad Gateway错误</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2012-02-15T02:35:24.000Z" itemprop="datePublished">2月 15 2012</time>
+    更新日期:<time datetime="2014-10-15T04:37:55.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一个是官方的FAQ(_http://bbs-vpser-net/thread-1144-1-1-html_)："><span class="toc-number">1.</span> <span class="toc-text">第一个是官方的FAQ( http://bbs.vpser.net/thread-1144-1-1.html )：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二个是非官方的，但是谈到了和官方第三种原因一样的解决方案，所以先试了下这个方案："><span class="toc-number">2.</span> <span class="toc-text">第二个是非官方的，但是谈到了和官方第三种原因一样的解决方案，所以先试了下这个方案：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接着尝试了第三个方案，改监听地址："><span class="toc-number">3.</span> <span class="toc-text">接着尝试了第三个方案，改监听地址：</span></a></li></ol>
+		</div>
+		
+		<p>最近站点隔一两天就会出现nginx 502 Bad Gateway错误，无法访问，以前都好好的，莫非是流量上来了的缘故？</p>
+<p>因为站点是用LNMP一键安装包搭建的环境，所以google了下这方面的情况，得到两个可能的解决方案，试试看了。</p>
+<p>最后验证第三种方案相当靠谱，用了以后就没有出现过502现象。</p>
+<p><span id="more-578"></span></p>
+<h3 id="第一个是官方的FAQ(_http://bbs-vpser-net/thread-1144-1-1-html_)：">第一个是官方的FAQ( <a href="http://bbs.vpser.net/thread-1144-1-1.html" target="_blank" rel="external">http://bbs.vpser.net/thread-1144-1-1.html</a> )：</h3>
+<p>第一种原因：目前lnmp一键安装包比较多的问题就是502 Bad Gateway，大部分情况下原因是在安装php前，脚本中某些lib包可能没有安装上，造成php没有编译安装成功。</p>
+<p>解决方法：</p>
+<p>可以尝试根据lnmp一键安装包中的脚本手动安装一下，看看是什么错误导致的，在网上搜索一下，或者把错误信息发上来。我们给你分析一下错误原因。</p>
+<p>第二种原因：</p>
+<p>在php.ini里，eaccelerator配置项一定要放在Zend Optimizer配置之前，否则也可能引起502 Bad Gateway</p>
+<p>第三种原因：</p>
+<p>在安装好使用过程中出现502问题，一般是因为默认php-cgi进程是5个，可能因为phpcgi进程不够用而造成502，需要修改/usr/local/php/etc/php-fpm.conf 将其中的max_children值适当增加。</p>
+<p>也有可能是max_requests值不够用。</p>
+<p>第四种原因：</p>
+<p>php执行超时，修改/usr/local/php/etc/php.ini 将max_execution_time 改为300</p>
+<p>第五种原因：</p>
+<p>磁盘空间不足，如mysql日志占用大量空间</p>
+<p>第六种原因：</p>
+<p>查看php-cgi进程是否在运行</p>
+<p>&nbsp;</p>
+<h3 id="第二个是非官方的，但是谈到了和官方第三种原因一样的解决方案，所以先试了下这个方案：">第二个是非官方的，但是谈到了和官方第三种原因一样的解决方案，所以先试了下这个方案：</h3>
+<p><a href="http://www.redicecn.com/html/Linux/20111226/358.html，http://blog.s135.com/post/361/" target="_blank" rel="external">http://www.redicecn.com/html/Linux/20111226/358.html，http://blog.s135.com/post/361/</a></p>
+<p>使用 netstat -anpo | grep &#8220;php-cgi&#8221; | wc -l 命令可以查看当前实际的FastCGI进程数，如果该数字接近预设的值（预设值可以在/usr/local/php/etc/php-fpm.conf中查看&lt;value name=&#8221;max_children&#8221;&gt;5&lt;/value&gt;）则需要增大该预设值。</p>
+<p>编辑/usr/local/php/etc/php-fpm.conf，将&lt;value name=&#8221;max_children&#8221;&gt;5&lt;/value&gt;根据情况修改为较大的值，然后重启LNMP，502问题没有再出现。</p>
+<p>&nbsp;</p>
+<p>暂时还没看到效果如何，已经改成了max_children = 20， 期待效果。</p>
+<p>改成20就死定了，SSH的命令行就执行不了，内存吃空了，后来在vps控制面板 重启了vps，又把max_children改小，为10才可以正常ssh执行命令了。</p>
+<h3 id="接着尝试了第三个方案，改监听地址：">接着尝试了第三个方案，改监听地址：</h3>
+<p>参考自 <a href="http://itfis.com/Internet/212.html，" target="_blank" rel="external">http://itfis.com/Internet/212.html，</a> <a href="http://www.5dw.org/Archives/20110406476.html。" target="_blank" rel="external">http://www.5dw.org/Archives/20110406476.html。</a></p>
+<p>具体步骤：</p>
+<p>1.修改nginx.conf</p>
+<p>nginx安装目录：/usr/local/nginx/conf/ ，打开nginx.conf，查找到：</p>
+<p>fastcgi_pass  unix:/tmp/php-cgi.sock;</p>
+<p>改为：</p>
+<p>fastcgi_pass  127.0.0.1:9000;</p>
+<p>2.修改php-fpm.conf</p>
+<p>php安装目录：，/usr/local/php/etc/，打开php-fpm.conf</p>
+<p>查找到第26行：</p>
+<p>&lt;value name=&#8221;listen_address&#8221;&gt;/tmp/php-cgi.sock&lt;/value&gt;</p>
+<p>改为</p>
+<p>&lt;value name=&#8221;listen_address&#8221;&gt;127.0.0.1:9000&lt;/value&gt;</p>
+<p>3.依次重启Nginx和php-fpm</p>
+<p>nginx 重启：</p>
+<p>/usr/local/nginx/sbin/nginx -t</p>
+<p>/usr/local/nginx/sbin/nginx -s reload</p>
+<p>php-fpm重启：</p>
+<p>/usr/local/php/sbin/php-fpm restart</p>
+<p>如果大家想用/root/vhost.sh生成出来的新站点，都自动生成这种端口监听信息的话，就vi /root/vhost.sh，修改148行内容即可。</p>
+<p><span style="color: #008000;"><strong> 试用第三种改监听端口的方案，已经看到效果，以前隔1、2天就502的情况在改后连续一周都没有再出现过，的确有效。</strong></span></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/solution/">solution</a><a href="/tags/服务器/">服务器</a><a href="/tags/bad-gateway/">bad gateway</a><a href="/tags/lnmp/">lnmp</a><a href="/tags/nginx-502/">nginx 502</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2012/02/15/LNMP一键安装包正常使用期间出现nginx-502-Bad-Gateway错误/" data-title="LNMP一键安装包正常使用期间出现nginx 502 Bad Gateway错误 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2012/02/15/开发者的SEO-–-标签的设置/" title="开发者的SEO – 标签的设置">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  开发者的SEO – 标签的设置</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2012/02/10/WordPress-api-使用指南中文手册CHM版/"  title="WordPress api + 使用指南中文手册CHM版">
+ <strong>NEXT:</strong><br/> 
+ <span>WordPress api + 使用指南中文手册CHM版
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一个是官方的FAQ(_http://bbs-vpser-net/thread-1144-1-1-html_)："><span class="toc-number">1.</span> <span class="toc-text">第一个是官方的FAQ( http://bbs.vpser.net/thread-1144-1-1.html )：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二个是非官方的，但是谈到了和官方第三种原因一样的解决方案，所以先试了下这个方案："><span class="toc-number">2.</span> <span class="toc-text">第二个是非官方的，但是谈到了和官方第三种原因一样的解决方案，所以先试了下这个方案：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接着尝试了第三个方案，改监听地址："><span class="toc-number">3.</span> <span class="toc-text">接着尝试了第三个方案，改监听地址：</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		
+		
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>43</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/Books/" style="font-size: 13.33px;">Books</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript/" style="font-size: 20.00px;">JavaScript</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 16.67px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    var _bdId = '391982416296a0d54221f59fe35250d4';
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F" + _bdId +"'  type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'null', 'null');  
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+</html>

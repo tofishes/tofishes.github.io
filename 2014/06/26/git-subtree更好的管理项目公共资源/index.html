@@ -1,0 +1,435 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="baidu_union_verify" content="d1952c66cf48912e21c18c7c581f382a">
+  <meta name="360-site-verification" content="67fbcc5a67f4c65c057315b28fa0b2c8" />
+<meta name="google-site-verification" content="2GzxQ0VtXwTSUdmGm6DzcmhTzM_I9QmzCb_pzpMzD88" />
+  
+    <title>git subtree更好的管理项目公共资源 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="[object Object]">
+    
+    <meta name="description" content="抛弃git submodule, 拥抱git subtree。
+来源于：http://aoxuis.me/posts/2013/08/07/git-subtree/
+使用场景
+例如，在项目Game中有一个子目录AI。Game和AI分别是一个独立的git项目，可以分开维护。为了避免直接复制粘贴代码，我">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            var _bdId ='391982416296a0d54221f59fe35250d4';
+             hm.src = "//hm.baidu.com/hm.js?" + _bdId;
+             var s = document.getElementsByTagName("script")[0]; 
+             s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/06/26/git-subtree更好的管理项目公共资源/" title="git subtree更好的管理项目公共资源" itemprop="url">git subtree更好的管理项目公共资源</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-06-26T03:07:28.000Z" itemprop="datePublished">6月 26 2014</time>
+    更新日期:<time datetime="2014-10-15T04:37:55.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用场景"><span class="toc-number">1.</span> <span class="toc-text">使用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对比git_submodule"><span class="toc-number">2.</span> <span class="toc-text">对比git submodule</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是git_subtree"><span class="toc-number">3.</span> <span class="toc-text">什么是git subtree</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git_subtree的前提条件"><span class="toc-number">4.</span> <span class="toc-text">git subtree的前提条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git_subtree用法"><span class="toc-number">5.</span> <span class="toc-text">git subtree用法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-_第一次添加子目录，建立与git项目的关联"><span class="toc-number">5.1.</span> <span class="toc-text">1. 第一次添加子目录，建立与git项目的关联</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-_从远程仓库更新子目录"><span class="toc-number">5.2.</span> <span class="toc-text">2. 从远程仓库更新子目录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-_从子目录push到远程仓库（确认你有写权限）"><span class="toc-number">5.3.</span> <span class="toc-text">3. 从子目录push到远程仓库（确认你有写权限）</span></a></li></ol></li></ol>
+		</div>
+		
+		<p>抛弃git submodule, 拥抱git subtree。</p>
+<p>来源于：<a href="http://aoxuis.me/posts/2013/08/07/git-subtree/" target="_blank" rel="external">http://aoxuis.me/posts/2013/08/07/git-subtree/</a></p>
+<h3 id="使用场景">使用场景</h3>
+<p>例如，在项目Game中有一个子目录AI。Game和AI分别是一个独立的git项目，可以分开维护。为了避免直接复制粘贴代码，我们希望Game中的AI子目录与AI的git项目关联，有3层意思：</p>
+<ol>
+<li>AI子目录使用AI的git项目来填充，内容保持一致。</li>
+<li>当AI的git项目代码有更新，可以拉取更新到Game项目的AI子目录来。</li>
+<li>反过来，当Game项目的AI子目录有变更，还可以推送这些变更到AI的git项目。用git subtree可以轻松满足上面的需求。</li>
+</ol>
+<p><span id="more-1119"></span></p>
+<h3 id="对比git_submodule">对比git submodule</h3>
+<p>如果你没有用过git submodule，你甚至可以不用了解<a href="http://git-scm.com/book/zh/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97" target="_blank" rel="external">git submodule是什么</a>，submodule的基本介绍也不在本文的说明范围内。虽然它满足了上述差不多的需求，但是复杂难用，以至于需要<a href="http://www.kafeitu.me/git/2012/03/27/git-submodule.html" target="_blank" rel="external">这么长一篇教程</a>才能说清楚用法。</p>
+<p>如果你的项目正在使用git submodule，你应该知道用submodule有多么麻烦，这里还有<a href="http://codingkilledthecat.wordpress.com/2012/04/28/why-your-company-shouldnt-use-git-submodules/" target="_blank" rel="external">一篇文章专门解释git submodule的缺点</a>，可以参考前面教程里的最后一段来删除submodule（是的，连删除步骤都非常麻烦）。</p>
+<p>使用git subtree之后，管理、更新都更加方便。</p>
+<h3 id="什么是git_subtree">什么是git subtree</h3>
+<p>git subtree是一条git子命令，本质上subtree是一种合并策略，<a href="https://www.kernel.org/pub/software/scm/git/docs/howto/using-merge-subtree.html" target="_blank" rel="external">从git v1.5.2，官方就推荐使用subtree代替submodule</a>，所以它并不需要保存.submodule这样的元信息。</p>
+<h3 id="git_subtree的前提条件">git subtree的前提条件</h3>
+<p>subtree子命令很晚才集成到git中，请确保你的git版本（使用git &#8211;version查看） &gt; v1.8.0.0。有些文章中说v1.7.11就已经集成了，实际上没有，如果直接执行会看到这样的结果：</p>
+<figure class="figure-code code"><br><div class="highlight"><br><pre>$git subtree<br>git: ‘subtree’ is not a git command. See ‘git —help’.</pre><br></div><br></figure>
+
+<p>如果你是在OS X下使用git，推荐用<a href="http://brew.sh/" target="_blank" rel="external">homebrew</a>来安装新版本</p>
+<figure class="figure-code code"><br><div class="highlight"><br><pre>$brew install git<br>$git —version<br>git version 1.8.3.4</pre><br></div><br></figure>
+
+<h3 id="git_subtree用法">git subtree用法</h3>
+<p>针对第一段的3条需求，我分别说明具体的命令。</p>
+<h4 id="1-_第一次添加子目录，建立与git项目的关联">1. 第一次添加子目录，建立与git项目的关联</h4>
+<p>建立关联总共有2条命令。</p>
+<p>语法：<code>git remote add -f &amp;lt;子仓库名&amp;gt; &amp;lt;子仓库地址&amp;gt;</code></p>
+<p>解释：其中-f意思是在添加远程仓库之后，立即执行fetch。</p>
+<p>语法：<code>git subtree add --prefix=&amp;lt;子目录名&amp;gt; &amp;lt;子仓库名&amp;gt; &amp;lt;分支&amp;gt; --squash</code></p>
+<p>解释：&#8211;squash意思是把subtree的改动合并成一次commit，这样就不用拉取子项目完整的历史记录。&#8211;prefix之后的=等号也可以用空格。</p>
+<p>示例</p>
+<figure class="figure-code code"><br><div class="highlight"><br><pre>$git remote add -f ai <a href="https://github.com/aoxu/ai.git" target="_blank" rel="external">https://github.com/aoxu/ai.git</a><br>$git subtree add —prefix=ai ai master —squash</pre><br></div><br></figure>
+
+<h4 id="2-_从远程仓库更新子目录">2. 从远程仓库更新子目录</h4>
+<p>更新子目录有2条命令。</p>
+<p>语法：<code>git fetch &amp;lt;远程仓库名&amp;gt; &amp;lt;分支&amp;gt;</code></p>
+<p>语法：<code>git subtree pull --prefix=&amp;lt;子目录名&amp;gt; &amp;lt;远程分支&amp;gt; &amp;lt;分支&amp;gt; --squash</code></p>
+<p>示例</p>
+<figure class="figure-code code"><br><div class="highlight"><br><pre>$git fetch ai master<br>$git subtree pull —prefix=ai ai —squash</pre><br></div><br></figure>
+
+<h4 id="3-_从子目录push到远程仓库（确认你有写权限）">3. 从子目录push到远程仓库（确认你有写权限）</h4>
+<p>推送子目录的变更有1条命令。</p>
+<p>语法：<code>git subtree push --prefix=&amp;lt;子目录名&amp;gt; &amp;lt;远程分支名&amp;gt; 分支</code></p>
+<p>示例</p>
+<figure class="figure-code code"><br><div class="highlight"><br><pre>$git subtree push —prefix=ai ai master</pre><br></div><br></figure>
+
+<p>参考资料：</p>
+<ol>
+<li><a href="https://speakerdeck.com/cloudsben/git-subtree-ti-dai-git-submodule" target="_blank" rel="external">speackerdeck</a></li>
+<li><a href="http://blogs.atlassian.com/2013/05/alternatives-to-git-submodule-git-subtree/" target="_blank" rel="external">atlassian</a></li>
+<li><a href="http://git-scm.com/book/zh/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A0%91%E5%90%88%E5%B9%B6" target="_blank" rel="external">pro git</a></li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/solution/">solution</a><a href="/tags/服务器/">服务器</a><a href="/tags/git/">git</a><a href="/tags/git-submodule/">git submodule</a><a href="/tags/git-subtree/">git subtree</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2014/06/26/git-subtree更好的管理项目公共资源/" data-title="git subtree更好的管理项目公共资源 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2014/07/07/出一个面试题/" title="出一个面试题">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  出一个面试题</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2014/06/24/摄影，从现在玩起/"  title="摄影，从现在玩起~">
+ <strong>NEXT:</strong><br/> 
+ <span>摄影，从现在玩起~
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用场景"><span class="toc-number">1.</span> <span class="toc-text">使用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对比git_submodule"><span class="toc-number">2.</span> <span class="toc-text">对比git submodule</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是git_subtree"><span class="toc-number">3.</span> <span class="toc-text">什么是git subtree</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git_subtree的前提条件"><span class="toc-number">4.</span> <span class="toc-text">git subtree的前提条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git_subtree用法"><span class="toc-number">5.</span> <span class="toc-text">git subtree用法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-_第一次添加子目录，建立与git项目的关联"><span class="toc-number">5.1.</span> <span class="toc-text">1. 第一次添加子目录，建立与git项目的关联</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-_从远程仓库更新子目录"><span class="toc-number">5.2.</span> <span class="toc-text">2. 从远程仓库更新子目录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-_从子目录push到远程仓库（确认你有写权限）"><span class="toc-number">5.3.</span> <span class="toc-text">3. 从子目录push到远程仓库（确认你有写权限）</span></a></li></ol></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		
+		
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>43</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/Books/" style="font-size: 13.33px;">Books</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript/" style="font-size: 20.00px;">JavaScript</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 16.67px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    var _bdId = '391982416296a0d54221f59fe35250d4';
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F" + _bdId +"'  type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'null', 'null');  
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+</html>

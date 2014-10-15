@@ -1,0 +1,589 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="baidu_union_verify" content="d1952c66cf48912e21c18c7c581f382a">
+  <meta name="360-site-verification" content="67fbcc5a67f4c65c057315b28fa0b2c8" />
+<meta name="google-site-verification" content="2GzxQ0VtXwTSUdmGm6DzcmhTzM_I9QmzCb_pzpMzD88" />
+  
+    <title>jCarouselLite-好用的图片滚动插件，修改加入悬停习惯 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="[object Object]">
+    
+    <meta name="description" content="插件Home：http://www.gmarwaha.com/jquery/jcarousellite/index.php
+一直在用，并且没有想过自己再造轮子的插件，作用是图片列表上下或垂直滚动，可以添加方向控制按钮，你应该懂的。
+用法很简单，jquery插件通用的套路，具体看官网。个人对这个插件做">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            var _bdId ='391982416296a0d54221f59fe35250d4';
+             hm.src = "//hm.baidu.com/hm.js?" + _bdId;
+             var s = document.getElementsByTagName("script")[0]; 
+             s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2011/04/13/jCarouselLite-好用的图片滚动插件，修改加入悬停习惯/" title="jCarouselLite-好用的图片滚动插件，修改加入悬停习惯" itemprop="url">jCarouselLite-好用的图片滚动插件，修改加入悬停习惯</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2011-04-13T15:02:33.000Z" itemprop="datePublished">4月 13 2011</time>
+    更新日期:<time datetime="2014-10-15T04:37:55.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>插件Home：<a href="http://www.gmarwaha.com/jquery/jcarousellite/index.php" target="_blank" rel="external">http://www.gmarwaha.com/jquery/jcarousellite/index.php</a></p>
+<p>一直在用，并且没有想过自己再造轮子的插件，作用是图片列表上下或垂直滚动，可以添加方向控制按钮，你应该懂的。</p>
+<p>用法很简单，jquery插件通用的套路，具体看官网。个人对这个插件做了下修改，当设置为自动滚动时候，鼠标放上去可以停止，离开则继续，同时增加一个button inactive类名设置。下面进入正题。</p>
+<p><span id="more-244"></span></p>
+<p>对于html的结构要求是这样的：</p>
+<pre class="brush:xml">&lt;div id="handler"&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;img /&gt;&lt;/li&gt;
+         ……
+    &lt;/ul&gt;
+&lt;/div&gt;</pre>
+
+<p>div,ul都会被插件自动加入合适的css，而且是相对定位。基本不需要额外css控制，当然在js生效前，会乱，如果网速慢的话。</p>
+<p>有必要对div加额外的margin等，控制其居中或怎样。div的left属性为0，是插件自动设置的，所以不要通过这个去控制位置了。</p>
+<p>插件修改后的代码如下：</p>
+<pre class="brush:js">(function($) {   // Compliant with jquery.noConflict()
+$.fn.jCarouselLite = function(o) {
+    o = $.extend({
+        btnPrev: null,
+        btnNext: null,
+        btnGo: null,
+        btnDisabled: 'btn-inactive', //禁用的时候的样式类名
+        mouseWheel: false,
+        auto: null,   
+
+        speed: 200,
+        easing: null,   
+
+        vertical: false,
+        circular: true,
+        visible: 3,
+        start: 0,
+        scroll: 1,   
+
+        beforeStart: null,
+        afterEnd: null
+    }, o || {});   
+
+    return this.each(function() {                           // Returns the element collection. Chainable.   
+
+        var running = false, animCss=o.vertical?"top":"left", sizeCss=o.vertical?"height":"width";
+        var div = $(this), ul = $("ul", div), tLi = $("li", ul), tl = tLi.size(), v = o.visible;   
+
+            if(tl == 0) {
+                return false;
+            }
+        if(o.circular) {
+            ul.prepend(tLi.slice(tl-v-1+1).clone())
+              .append(tLi.slice(0,v).clone());
+            o.start += v;
+        }   
+
+        var li = $("li", ul), itemLength = li.size(), curr = o.start;
+        div.css("visibility", "visible");   
+
+        li.css({overflow: "hidden", 'float': o.vertical ? "none" : "left"});
+        ul.css({margin: "0", padding: "0", position: "relative", "list-style-type": "none", "z-index": "1"});
+        div.css({overflow: "hidden", position: "relative", "z-index": "2", left: "0px"});   
+
+        var liSize = o.vertical ? height(li) : width(li);   // Full li size(incl margin)-Used for animation
+        var ulSize = liSize * itemLength;                   // size of full ul(total length, not just for the visible items)
+        var divSize = liSize * v;                           // size of entire div(total length for just the visible items)   
+
+        li.css({width: li.width(), height: li.height()});
+        ul.css(sizeCss, ulSize+"px").css(animCss, -(curr*liSize));   
+
+        div.css(sizeCss, divSize+"px");                     // Width of the DIV. length of visible images   
+
+        if(o.btnPrev)
+            $(o.btnPrev).click(function() {
+                return go(curr-o.scroll);
+            });   
+
+        if(o.btnNext)
+            $(o.btnNext).click(function() {
+                return go(curr+o.scroll);
+            });   
+
+        if(o.btnGo)
+            $.each(o.btnGo, function(i, val) {
+                $(val).click(function() {
+                    return go(o.circular ? o.visible+i : i);
+                });
+            });   
+
+        if(o.mouseWheel &amp;&amp; div.mousewheel)
+            div.mousewheel(function(e, d) {
+                return d&gt;0 ? go(curr-o.scroll) : go(curr+o.scroll);
+            });
+        var jcarouselliteAutoId;
+        if(o.auto) {
+            jcarouselliteAutoId = setInterval(function() {
+                go(curr+o.scroll);
+            }, o.auto+o.speed);
+            /* 2009年7月30日 添加鼠标浮动停止滚动 */
+            ul.hover(function(){
+                    clearInterval(jcarouselliteAutoId);
+                },function(){
+                    jcarouselliteAutoId = setInterval(function() {
+                        go(curr+o.scroll);
+                    }, o.auto+o.speed);
+            });
+        };   
+
+        function vis() {
+            return li.slice(curr).slice(0,v);
+        };   
+
+        function go(to) {
+            if(tl &lt;= 3) {
+                return false;
+            }   
+
+            if(!running) {   
+
+                if(o.beforeStart)
+                    o.beforeStart.call(this, vis());   
+
+                if(o.circular) {            // If circular we are in first or last, then goto the other end
+                    if(to&lt;=o.start-v-1) {           // If first, then goto last
+                        ul.css(animCss, -((itemLength-(v*2))*liSize)+"px");
+                        // If "scroll" &gt; 1, then the "to" might not be equal to the condition; it can be lesser depending on the number of elements.
+                        curr = to==o.start-v-1 ? itemLength-(v*2)-1 : itemLength-(v*2)-o.scroll;
+                    } else if(to&gt;=itemLength-v+1) { // If last, then goto first
+                        ul.css(animCss, -( (v) * liSize ) + "px" );
+                        // If "scroll" &gt; 1, then the "to" might not be equal to the condition; it can be greater depending on the number of elements.
+                        curr = to==itemLength-v+1 ? v+1 : v+o.scroll;
+                    } else curr = to;
+                } else {                    // If non-circular and to points to first or last, we just return.
+                    if(to&lt;0 || to&gt;itemLength-v) return;
+                    else curr = to;
+                }                           // If neither overrides it, the curr will still be "to" and we can proceed.   
+
+                running = true;   
+
+                ul.animate(
+                    animCss == "left" ? { left: -(curr*liSize) } : { top: -(curr*liSize) } , o.speed, o.easing,
+                    function() {
+                        if(o.afterEnd)
+                            o.afterEnd.call(this, vis());
+                        running = false;
+                    }
+                );
+                // Disable buttons when the carousel reaches the last/first, and enable when not
+                if(!o.circular) {
+                    $(o.btnPrev + "," + o.btnNext).removeClass(o.btnDisabled);
+                    $( (curr-o.scroll&lt;0 &amp;&amp; o.btnPrev)
+                        ||
+                       (curr+o.scroll &gt; itemLength-v &amp;&amp; o.btnNext)
+                        ||
+                       []
+                     ).addClass(o.btnDisabled);
+                }   
+
+            }
+            return false;
+        };
+    });
+};   
+
+function css(el, prop) {
+    return parseInt($.css(el[0], prop)) || 0;
+};
+function width(el) {
+    return  el[0].offsetWidth + css(el, 'marginLeft') + css(el, 'marginRight');
+};
+function height(el) {
+    return el[0].offsetHeight + css(el, 'marginTop') + css(el, 'marginBottom');
+};   
+
+})(jQuery);</pre>
+
+<p>2011年7月12日 附加一个demo代码：</p>
+<p>html结构：</p>
+<pre class="brush:xml">&lt;div class="slider-wrap"&gt;
+    &lt;a id="bg_store_prev" class="carousel-button carousel-prev" href="javascript:void(0);"&gt;&lt;/a&gt;
+    &lt;a id="bg_store_next" class="carousel-button carousel-next" href="javascript:void(0);"&gt;&lt;/a&gt;
+    &lt;div <span style="color: #ff0000;">id="store-bg-wrap"</span>&gt;
+        &lt;ul class="slider-list clearfix"&gt;&lt;?php for($i = 0; $i &lt; 5; $i++) { //php循环输出多个图片li，省事儿 ?&gt;
+            &lt;li&gt;
+                &lt;a class="thumb-wrap" &gt;
+                    &lt;img src="http://wac.2659.edgecastcdn.net/802659/production82/images/backgrounds/miguel_gonzalez_passing_by.png"&gt;
+                &lt;/a&gt;
+                &lt;p class="background-sig"&gt;Passing Wall&lt;br /&gt;by &lt;a href=""&gt;Miguel Gonzalez&lt;/a&gt;&lt;/p&gt;
+            &lt;/li&gt;                            &lt;?php }?&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+
+<p>css样式：</p>
+<pre class="brush:css">.slider-wrap {position:relative;padding:0 22px 0 24px;zoom:1;height:142px;overflow:hidden}
+    .carousel-button{position:absolute;top:0;width:17px;height:100px;}
+    .carousel-prev{left:0;background:#ddd url(http://wac.2659.edgecastcdn.net/802659/production83/images/buttons/sprite_carousel_prev.png) no-repeat 4px 50%;border-radius:3px 0 3px 0;-moz-border-radius:3px 0 3px 0;-webkit-border-radius:3px 0 3px 0;}
+    .carousel-next{right:0;background:#ddd url(http://wac.2659.edgecastcdn.net/802659/production83/images/buttons/sprite_carousel_next.png) no-repeat 4px 50%;border-radius:0px 3px 0px 3px;-moz-border-radius:0 3px 3px 0;-webkit-border-radius:0 3px 3px 0 ;}
+    .carousel-prev:hover{background-position:-16px 50%}
+    .carousel-next:hover{background-position:-16px 50%}
+    .carousel-prev:active{background-position:-36px 50%}
+    .carousel-next:active{background-position:-36px 50%}
+    .btn-inactive {background-position:-56px 50% !important}
+.slider-list li {display:inline;float:left;position:relative;margin:0 6px 6px 0;width:160px;text-align:center;}
+    .thumb-wrap img {width:156px;height:96px;border:2px solid #fff}
+    .thumb-wrap:hover img, .thumb-wrap-curr img {border-color:#2b82ad}</pre>
+
+<p>js调用：</p>
+<pre class="brush:js">$('#store-bg-wrap').jCarouselLite({
+    circular: 0,
+    btnPrev: '#bg_store_prev',
+    btnNext: '#bg_store_next'
+});</pre>  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/code/">code</a><a href="/tags/jQuery/">jQuery</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2011/04/13/jCarouselLite-好用的图片滚动插件，修改加入悬停习惯/" data-title="jCarouselLite-好用的图片滚动插件，修改加入悬停习惯 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2011/04/29/关于jquery方法closest/" title="关于jquery方法closest()">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  关于jquery方法closest()</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2011/04/12/不定大小的图片居中，并拥有等宽的信息条/"  title="不定大小的图片居中，并拥有等宽的信息条">
+ <strong>NEXT:</strong><br/> 
+ <span>不定大小的图片居中，并拥有等宽的信息条
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		
+		
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>43</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/Books/" style="font-size: 13.33px;">Books</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript/" style="font-size: 20.00px;">JavaScript</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 16.67px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    var _bdId = '391982416296a0d54221f59fe35250d4';
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F" + _bdId +"'  type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'null', 'null');  
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+</html>

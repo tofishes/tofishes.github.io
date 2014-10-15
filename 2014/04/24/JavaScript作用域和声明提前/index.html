@@ -1,0 +1,542 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="baidu_union_verify" content="d1952c66cf48912e21c18c7c581f382a">
+  <meta name="360-site-verification" content="67fbcc5a67f4c65c057315b28fa0b2c8" />
+<meta name="google-site-verification" content="2GzxQ0VtXwTSUdmGm6DzcmhTzM_I9QmzCb_pzpMzD88" />
+  
+    <title>JavaScript作用域和声明提前 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="[object Object]">
+    
+    <meta name="description" content="来自  JavaScript Scoping and Hoisting
+hoisting 就是声明提前的英语用词。全英文，未翻译。
+
+Do you know what value will be alerted if the following is executed as a JavaScript">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+    
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            var _bdId ='391982416296a0d54221f59fe35250d4';
+             hm.src = "//hm.baidu.com/hm.js?" + _bdId;
+             var s = document.getElementsByTagName("script")[0]; 
+             s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/04/24/JavaScript作用域和声明提前/" title="JavaScript作用域和声明提前" itemprop="url">JavaScript作用域和声明提前</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-04-23T16:55:16.000Z" itemprop="datePublished">4月 24 2014</time>
+    更新日期:<time datetime="2014-10-15T04:37:55.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Name_Resolution_Order"><span class="toc-number">1.</span> <span class="toc-text">Name Resolution Order</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Named_Function_Expressions"><span class="toc-number">2.</span> <span class="toc-text">Named Function Expressions</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#How_to_Code_With_This_Knowledge"><span class="toc-number"></span> <span class="toc-text">How to Code With This Knowledge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#What_the_Standard_Says"><span class="toc-number"></span> <span class="toc-text">What the Standard Says</span></a>
+		</div>
+		
+		<p>来自 <a href="http://www.adequatelygood.com/JavaScript-Scoping-and-Hoisting.html" target="_blank" rel="external"> JavaScript Scoping and Hoisting</a></p>
+<p>hoisting 就是声明提前的英语用词。全英文，未翻译。</p>
+<p><span id="more-1078"></span></p>
+<p>Do you know what value will be alerted if the following is executed as a JavaScript program?</p>
+<pre><code><span class="keyword">var</span> foo = <span class="number">1</span>;
+function bar() {
+    <span class="keyword">if</span> (!foo) {
+        <span class="keyword">var</span> foo = <span class="number">10</span>;
+    }
+    alert(foo);
+}
+bar();`&lt;/pre&gt;
+
+<span class="type">If</span> it surprises you that the answer <span class="keyword">is</span> “<span class="number">10</span>”, then this one will probably really throw you <span class="keyword">for</span> a loop:
+
+&lt;pre&gt;`<span class="keyword">var</span> a = <span class="number">1</span>;
+function b() {
+    a = <span class="number">10</span>;
+    <span class="keyword">return</span>;
+    function a() {}
+}
+b();
+alert(a);`&lt;/pre&gt;
+
+<span class="type">Here</span>, <span class="keyword">of</span> course, the browser will alert “<span class="number">1</span>”. <span class="type">So</span> what’s going on here? <span class="type">While</span> it might seem strange, dangerous, <span class="keyword">and</span> confusing, this <span class="keyword">is</span> actually a powerful <span class="keyword">and</span> expressive feature <span class="keyword">of</span> the language. I don’t know <span class="keyword">if</span> there <span class="keyword">is</span> a standard name <span class="keyword">for</span> this specific behavior, but I’ve come to like the term “hoisting”. <span class="type">This</span> article will <span class="keyword">try</span> to shed some light on this mechanism, but first lets take a necessary detour to understand <span class="type">JavaScript</span>’s scoping.
+
+<span class="comment">## Scoping in JavaScript</span>
+
+<span class="type">One</span> <span class="keyword">of</span> the sources <span class="keyword">of</span> most confusion <span class="keyword">for</span> <span class="type">JavaScript</span> beginners <span class="keyword">is</span> scoping. <span class="type">Actually</span>, it’s <span class="keyword">not</span> just beginners. I’ve met a lot <span class="keyword">of</span> experienced <span class="type">JavaScript</span> programmers who don’t fully understand scoping. <span class="type">The</span> reason scoping <span class="keyword">is</span> so confusing <span class="keyword">in</span> <span class="type">JavaScript</span> <span class="keyword">is</span> because it looks like a C-family language. <span class="type">Consider</span> the following C program:
+
+&lt;pre&gt;`<span class="comment">#include &amp;lt;stdio.h&amp;gt;</span>
+<span class="type">int</span> main() {
+    <span class="type">int</span> x = <span class="number">1</span>;
+    printf(<span class="string">"%d, "</span>, x); // <span class="number">1</span>
+    <span class="keyword">if</span> (<span class="number">1</span>) {
+        <span class="type">int</span> x = <span class="number">2</span>;
+        printf(<span class="string">"%d, "</span>, x); // <span class="number">2</span>
+    }
+    printf(<span class="string">"%d\n"</span>, x); // <span class="number">1</span>
+}`&lt;/pre&gt;
+
+<span class="type">The</span> output <span class="keyword">from</span> this program will be `<span class="number">1</span>, <span class="number">2</span>, <span class="number">1</span>`. <span class="type">This</span> <span class="keyword">is</span> because C, <span class="keyword">and</span> the rest <span class="keyword">of</span> the C family, has **<span class="keyword">block</span>-level scope**. <span class="type">When</span> control enters a <span class="keyword">block</span>, such <span class="keyword">as</span> the `<span class="keyword">if</span>` statement, new variables can be declared within that scope, <span class="keyword">without</span> affecting the outer scope. <span class="type">This</span> <span class="keyword">is</span> <span class="keyword">not</span> the <span class="keyword">case</span> <span class="keyword">in</span> <span class="type">JavaScript</span>. <span class="type">Try</span> the following <span class="keyword">in</span> <span class="type">Firebug</span>:
+
+&lt;pre&gt;`<span class="keyword">var</span> x = <span class="number">1</span>;
+console.log(x); // <span class="number">1</span>
+<span class="keyword">if</span> (<span class="literal">true</span>) {
+    <span class="keyword">var</span> x = <span class="number">2</span>;
+    console.log(x); // <span class="number">2</span>
+}
+console.log(x); // <span class="number">2</span>`&lt;/pre&gt;
+
+<span class="type">In</span> this <span class="keyword">case</span>, <span class="type">Firebug</span> will show `<span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>`. <span class="type">This</span> <span class="keyword">is</span> because <span class="type">JavaScript</span> has **function-level scope**. <span class="type">This</span> <span class="keyword">is</span> radically different <span class="keyword">from</span> the C family. <span class="type">Blocks</span>, such <span class="keyword">as</span> `<span class="keyword">if</span>` statements, **<span class="keyword">do</span> <span class="keyword">not</span>** create a new scope. <span class="type">Only</span> functions create a new scope.
+
+<span class="type">To</span> a lot <span class="keyword">of</span> programmers who are used to languages like C, C++, C<span class="comment">#, or Java, this is unexpected and unwelcome. Luckily, because of the flexibility of JavaScript functions, there is a workaround. If you must create temporary scopes within a function, do the following:</span>
+
+&lt;pre&gt;`function foo() {
+    <span class="keyword">var</span> x = <span class="number">1</span>;
+    <span class="keyword">if</span> (x) {
+        (function () {
+            <span class="keyword">var</span> x = <span class="number">2</span>;
+            // some other code
+        }());
+    }
+    // x <span class="keyword">is</span> still <span class="number">1</span>.
+}`&lt;/pre&gt;
+
+<span class="type">This</span> <span class="keyword">method</span> <span class="keyword">is</span> actually quite flexible, <span class="keyword">and</span> can be used anywhere you need a temporary scope, <span class="keyword">not</span> just within <span class="keyword">block</span> statements. <span class="type">However</span>, I strongly recommend that you take the time to really understand <span class="keyword">and</span> appreciate <span class="type">JavaScript</span> scoping. <span class="type">It</span>’s quite powerful, <span class="keyword">and</span> one <span class="keyword">of</span> my favorite features <span class="keyword">of</span> the language. <span class="type">If</span> you understand scoping, hoisting will make a lot more sense to you.
+
+<span class="comment">## Declarations, Names, and Hoisting</span>
+
+<span class="type">In</span> <span class="type">JavaScript</span>, a name enters a scope <span class="keyword">in</span> one <span class="keyword">of</span> four basic ways:
+</code></pre><ol>
+<li><strong>Language-defined:</strong> All scopes are, by default, given the names <code>this</code> and <code>arguments</code>.</li>
+<li><strong>Formal parameters:</strong> Functions can have named formal parameters, which are scoped to the body of that function.</li>
+<li><strong>Function declarations:</strong> These are of the form <code>function foo() {}</code>.</li>
+<li><p><strong>Variable declarations:</strong> These take the form <code>var foo;</code>.</p>
+<p>Function declarations and variable declarations are always moved (“hoisted”) invisibly to the top of their containing scope by the JavaScript interpreter. Function parameters and language-defined names are, obviously, already there. This means that code like this:</p>
+<pre>`function foo() {
+    bar();
+    var x = 1;
+}`</pre>
+
+<p>is actually interpreted like this:</p>
+<pre>`function foo() {
+    var x;
+    bar();
+    x = 1;
+}`</pre>
+
+<p>It turns out that it doesn’t matter whether the line that contains the declaration would ever be executed. The following two functions are equivalent:</p>
+<pre>`function foo() {
+    if (false) {
+        var x = 1;
+    }
+    return;
+    var y = 1;
+}
+function foo() {
+    var x, y;
+    if (false) {
+        x = 1;
+    }
+    return;
+    y = 1;
+}`</pre>
+
+<p>Notice that the assignment portion of the declarations were not hoisted. Only the name is hoisted. This is not the case with function declarations, where the entire function body will be hoisted as well. But remember that there are two normal ways to declare functions. Consider the following JavaScript:</p>
+<pre>`function test() {
+    foo(); // TypeError "foo is not a function"
+    bar(); // "this will run!"
+    var foo = function () { // function expression assigned to local variable 'foo'
+        alert("this won't run!");
+    }
+    function bar() { // function declaration, given the name 'bar'
+        alert("this will run!");
+    }
+}
+test();`</pre>
+
+<p>In this case, only the function declaration has its body hoisted to the top. The name ‘foo’ is hoisted, but the body is left behind, to be assigned during execution.</p>
+<p>That covers the basics of hoisting, which is not as complex or confusing as it seems. Of course, this being JavaScript, there is a little more complexity in certain special cases.</p>
+<h3 id="Name_Resolution_Order">Name Resolution Order</h3>
+<p>The most important special case to keep in mind is name resolution order. Remember that there are four ways for names to enter a given scope. The order I listed them above is the order they are resolved in. In general, if a name has already been defined, it is never overridden by another property of the same name. This means that a function declaration takes priority over a variable declaration. This does not mean that an assignment to that name will not work, just that the declaration portion will be ignored. There are a few exceptions:</p>
+</li>
+</ol>
+<ul>
+<li>The built-in name <code>arguments</code> behaves oddly. It seems to be declared following the formal parameters, but before function declarations. This means that a formal parameter with the name <code>arguments</code> will take precedence over the built-in, even if it is undefined. This is a bad feature. Don’t use the name <code>arguments</code> as a formal parameter.</li>
+<li>Trying to use the name <code>this</code> as an identifier anywhere will cause a SyntaxError. This is a good feature.</li>
+<li><p>If multiple formal parameters have the same name, the one occurring latest in the list will take precedence, even if it is undefined.</p>
+<h3 id="Named_Function_Expressions">Named Function Expressions</h3>
+<p>You can give names to functions defined in function expressions, with syntax like a function declaration. This does not make it a function declaration, and the name is not brought into scope, nor is the body hoisted. Here’s some code to illustrate what I mean:</p>
+<pre>`foo(); // TypeError "foo is not a function"
+bar(); // valid
+baz(); // TypeError "baz is not a function"
+spam(); // ReferenceError "spam is not defined"
+
+var foo = function () {}; // anonymous function expression ('foo' gets hoisted)
+function bar() {}; // function declaration ('bar' and the function body get hoisted)
+var baz = function spam() {}; // named function expression (only 'baz' gets hoisted)
+
+foo(); // valid
+bar(); // valid
+baz(); // valid
+spam(); // ReferenceError "spam is not defined"`</pre>
+
+<h2 id="How_to_Code_With_This_Knowledge">How to Code With This Knowledge</h2>
+<p>Now that you understand scoping and hoisting, what does that mean for coding in JavaScript? The most important thing is to always declare your variables with a <code>var</code> statement. I <strong>strongly</strong> recommend that you have <em>exactly one</em> <code>var</code> statement per scope, and that it be at the top. If you force yourself to do this, you will never have hoisting-related confusion. However, doing this can make it hard to keep track of which variables have actually been declared in the current scope. I recommend using <a href="http://www.jslint.com" target="_blank" rel="external">JSLint</a> with the <code>onevar</code> option to enforce this. If you’ve done all of this, your code should look something like this:</p>
+<p><pre>`/<em>jslint onevar: true […] </em>/<br>function foo(a, b, c) {</pre></p>
+<pre><code>var <span class="variable">x =</span> <span class="number">1</span>,
+    bar,
+    <span class="variable">baz =</span> <span class="string">"something"</span>;
+</code></pre><p>}</p>
+</li>
+</ul>
+<h2 id="What_the_Standard_Says">What the Standard Says</h2>
+<p>I find that it’s often useful to just consult the <a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf" target="_blank" rel="external">ECMAScript Standard (pdf)</a> directly to understand how these things work. Here’s what it has to say about variable declarations and scope (section 12.2.2 in the older version):</p>
+<blockquote>
+<p>If the variable statement occurs inside a FunctionDeclaration, the variables are defined with function-local scope in that function, as described in section 10.1.3. Otherwise, they are defined with global scope (that is, they are created as members of the global object, as described in section 10.1.3) using property attributes { DontDelete }. Variables are created when the execution scope is entered. A Block does not define a new execution scope. Only Program and FunctionDeclaration produce a new scope. Variables are initialised to undefined when created. A variable with an Initialiser is assigned the value of its AssignmentExpression when the VariableStatement is executed, not when the variable is created.</p>
+</blockquote>
+<p>I hope this article has shed some light on one of the most common sources of confusion to JavaScript programmers. I have tried to be as thorough as possible, to avoid creating more confusion. If I have made any mistakes or have large omissions, please let me know.</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/JavaScript/">JavaScript</a><a href="/tags/hoisting/">hoisting</a><a href="/tags/JavaScript作用域/">JavaScript作用域</a><a href="/tags/scoping/">scoping</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2014/04/24/JavaScript作用域和声明提前/" data-title="JavaScript作用域和声明提前 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2014/05/07/使用CSS灰化图片/" title="使用CSS灰化图片">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  使用CSS灰化图片</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2014/02/12/如何抛弃jQuery？/"  title="如何抛弃jQuery？">
+ <strong>NEXT:</strong><br/> 
+ <span>如何抛弃jQuery？
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Name_Resolution_Order"><span class="toc-number">1.</span> <span class="toc-text">Name Resolution Order</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Named_Function_Expressions"><span class="toc-number">2.</span> <span class="toc-text">Named Function Expressions</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#How_to_Code_With_This_Knowledge"><span class="toc-number"></span> <span class="toc-text">How to Code With This Knowledge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#What_the_Standard_Says"><span class="toc-number"></span> <span class="toc-text">What the Standard Says</span></a>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		
+		
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>43</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/Books/" style="font-size: 13.33px;">Books</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript/" style="font-size: 20.00px;">JavaScript</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 16.67px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    var _bdId = '391982416296a0d54221f59fe35250d4';
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F" + _bdId +"'  type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'null', 'null');  
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+</html>
