@@ -10,7 +10,7 @@
     <meta name="author" content="ToFishes">
     
     <meta name="description" content="来自https://developer.mozilla.org/en-US/docs/DOM/Storage
-从IE8+，到目前标准浏览器都支持window.localStorage对象，并且一般也都支持window.JSON，这样很好， 因为localStorage存的都是字符串，如果是json格">
+从IE8+，到目前标准浏览器都支持window.localStorage对象，并且一般也都支持window.JSON，这样很好， 因为localStorage存的都是字符串，如果是json格式，刚好很方便用JSON对象处理。">
     
     
     
@@ -62,7 +62,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2012/08/28/html5-localStorage/" title="html5 localStorage" itemprop="url">html5 localStorage</a>
+      <a href="/2012/08/28/html5-localstorage/" title="html5 localStorage" itemprop="url">html5 localStorage</a>
   </h1>
   <p class="article-author">By
     
@@ -70,7 +70,7 @@
     </p>
   <p class="article-time">
     <time datetime="2012-08-28T03:29:34.000Z" itemprop="datePublished">8月 28 2012</time>
-    更新日期:<time datetime="2014-10-15T04:37:55.000Z" itemprop="dateModified">10月 15 2014</time>
+    更新日期:<time datetime="2014-10-15T10:58:07.000Z" itemprop="dateModified">10月 15 2014</time>
     
   </p>
 </header>
@@ -84,50 +84,12 @@
 		
 		<p>来自<a href="https://developer.mozilla.org/en-US/docs/DOM/Storage" target="_blank" rel="external">https://developer.mozilla.org/en-US/docs/DOM/Storage</a></p>
 <p>从IE8+，到目前标准浏览器都支持window.localStorage对象，并且一般也都支持window.JSON，这样很好， 因为localStorage存的都是字符串，如果是json格式，刚好很方便用JSON对象处理。</p>
-<p><span id="more-960"></span></p>
+<a id="more"></a>
+
 <p>localStorage API如下：</p>
-<pre>interface Storage {
-  readonly attribute unsigned long length;
-  [IndexGetter] DOMString key(in unsigned long index);
-  [NameGetter] DOMString getItem(in DOMString key);
-  [NameSetter] void setItem(in DOMString key, in DOMString data);
-  [NameDeleter] void removeItem(in DOMString key);
-  void clear();
-};</pre>
-
-<p>同时一个localStorage变量storage也支持属性直接读写，比如：</p>
-<pre>storage.a = 'a';
-storage['b'] = 'b';</pre>
-
-<p>不支持localStorage的浏览器，可以用cookie来兼容一下，当然cookie存储大小上限一般是4K，兼容如下：</p>
-<pre>if (!window.localStorage) {
-  window.localStorage = {
-    getItem: function (sKey) {
-      if (!sKey || !this.hasOwnProperty(sKey)) { return null; }
-      return unescape(document.cookie.replace(new RegExp("(?:^|.*;\\s*)" + escape(sKey).replace(/[\-\.\+\*]/g, "\\$&amp;") + "\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"), "$1"));
-    },
-    key: function (nKeyId) {
-      return unescape(document.cookie.replace(/\s*\=(?:.(?!;))*$/, "").split(/\s*\=(?:[^;](?!;))*[^;]?;\s*/)[nKeyId]);
-    },
-    setItem: function (sKey, sValue) {
-      if(!sKey) { return; }
-      document.cookie = escape(sKey) + "=" + escape(sValue) + "; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/";
-      this.length = document.cookie.match(/\=/g).length;
-    },
-    length: 0,
-    removeItem: function (sKey) {
-      if (!sKey || !this.hasOwnProperty(sKey)) { return; }
-      document.cookie = escape(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-      this.length--;
-    },
-    hasOwnProperty: function (sKey) {
-      return (new RegExp("(?:^|;\\s*)" + escape(sKey).replace(/[\-\.\+\*]/g, "\\$&amp;") + "\\s*\\=")).test(document.cookie);
-    }
-  };
-  window.localStorage.length = (document.cookie.match(/\=/g) || window.localStorage).length;
-}</pre>
-
-<p>跟localStorage一样的，还有个sessionStorage，顾名思义就是数据存储有效期等于session的有效期。</p>
+<p><pre>interface Storage {<br>  readonly attribute unsigned long length;<br>  [IndexGetter] DOMString key(in unsigned long index);<br>  [NameGetter] DOMString getItem(in DOMString key);<br>  [NameSetter] void setItem(in DOMString key, in DOMString data);<br>  [NameDeleter] void removeItem(in DOMString key);<br>  void clear();<br>};</pre><br>同时一个localStorage变量storage也支持属性直接读写，比如：</p>
+<p><pre>storage.a = ‘a’;<br>storage[‘b’] = ‘b’;</pre><br>不支持localStorage的浏览器，可以用cookie来兼容一下，当然cookie存储大小上限一般是4K，兼容如下：</p>
+<p><pre>if (!window.localStorage) {<br>  window.localStorage = {<br>    getItem: function (sKey) {<br>      if (!sKey || !this.hasOwnProperty(sKey)) { return null; }<br>      return unescape(document.cookie.replace(new RegExp(“(?:^|.<em>;\s</em>)” + escape(sKey).replace(/[-.+*]/g, “\$&amp;”) + “\s<em>\=\s</em>((?:<a href="?!;">^;</a>)<em>[^;]?).</em>“), “$1”));<br>    },<br>    key: function (nKeyId) {<br>      return unescape(document.cookie.replace(/\s<em>\=(?:.(?!;))</em>$/, “”).split(/\s<em>\=(?:<a href="?!;">^;</a>)</em>[^;]?;\s<em>/)[nKeyId]);<br>    },<br>    setItem: function (sKey, sValue) {<br>      if(!sKey) { return; }<br>      document.cookie = escape(sKey) + “=” + escape(sValue) + “; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/“;<br>      this.length = document.cookie.match(/\=/g).length;<br>    },<br>    length: 0,<br>    removeItem: function (sKey) {<br>      if (!sKey || !this.hasOwnProperty(sKey)) { return; }<br>      document.cookie = escape(sKey) + “=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/“;<br>      this.length—;<br>    },<br>    hasOwnProperty: function (sKey) {<br>      return (new RegExp(“(?:^|;\s</em>)” + escape(sKey).replace(/[-.+*]/g, “\$&amp;”) + “\s*\=”)).test(document.cookie);<br>    }<br>  };<br>  window.localStorage.length = (document.cookie.match(/\=/g) || window.localStorage).length;<br>}</pre><br>跟localStorage一样的，还有个sessionStorage，顾名思义就是数据存储有效期等于session的有效期。</p>
 <p>更多了解见这里： <a href="http://www.cnblogs.com/xiaowei0705/archive/2011/04/19/2021372.html" target="_blank" rel="external">http://www.cnblogs.com/xiaowei0705/archive/2011/04/19/2021372.html</a></p>
   
 	</div>
@@ -135,15 +97,20 @@ storage['b'] = 'b';</pre>
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/JavaScript/">JavaScript</a><a href="/tags/html5/">html5</a><a href="/tags/localStorage/">localStorage</a><a href="/tags/sessionStorage/">sessionStorage</a>
+  <span></span> <a href="/tags/html5/">html5</a><a href="/tags/localStorage/">localStorage</a><a href="/tags/sessionStorage/">sessionStorage</a>
   </div>
 
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/JavaScript/">JavaScript</a>
+</div>
 
 
 
 <div class="article-share" id="share">
 
-  <div data-url="http://umitime.com/2012/08/28/html5-localStorage/" data-title="html5 localStorage | 听雨~" data-tsina="null" class="share clearfix">
+  <div data-url="http://umitime.com/2012/08/28/html5-localstorage/" data-title="html5 localStorage | 听雨~" data-tsina="null" class="share clearfix">
   </div>
 
 </div>
@@ -153,7 +120,7 @@ storage['b'] = 'b';</pre>
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2012/08/28/同时大量ajax请求同一个url的处理/" title="同时大量ajax请求同一个url的处理">
+ <a href="/2012/08/28/lots-of-ajax-request-for-same-url/" title="同时大量ajax请求同一个url的处理">
   <strong>PREVIOUS:</strong><br/>
   <span>
   同时大量ajax请求同一个url的处理</span>
@@ -162,7 +129,7 @@ storage['b'] = 'b';</pre>
 
 
 <div class="next">
-<a href="/2012/08/27/TortoiseGit的安装并用于Github/"  title="TortoiseGit的安装并用于Github">
+<a href="/2012/08/27/tortoisegit-install-and-used-for-github/"  title="TortoiseGit的安装并用于Github">
  <strong>NEXT:</strong><br/> 
  <span>TortoiseGit的安装并用于Github
 </span>
@@ -199,6 +166,119 @@ storage['b'] = 'b';</pre>
 </div>
 
   
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/JavaScript/" title="JavaScript">JavaScript<sup>2</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/" title="JavaScript">JavaScript<sup>41</sup></a></li>
+		
+			<li><a href="/categories/code/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Books/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/solution/WordPress/" title="WordPress">WordPress<sup>3</sup></a></li>
+		
+			<li><a href="/categories/WordPress/" title="WordPress">WordPress<sup>2</sup></a></li>
+		
+			<li><a href="/categories/code/" title="code">code<sup>7</sup></a></li>
+		
+			<li><a href="/categories/database/" title="database">database<sup>5</sup></a></li>
+		
+			<li><a href="/categories/code/html-amp-css/" title="html&amp;amp;css">html&amp;amp;css<sup>1</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/" title="html&amp;amp;css">html&amp;amp;css<sup>23</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/jQuery/" title="jQuery">jQuery<sup>2</sup></a></li>
+		
+			<li><a href="/categories/code/jQuery/" title="jQuery">jQuery<sup>1</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/" title="jQuery">jQuery<sup>2</sup></a></li>
+		
+			<li><a href="/categories/jQuery/" title="jQuery">jQuery<sup>17</sup></a></li>
+		
+			<li><a href="/categories/java/" title="java">java<sup>11</sup></a></li>
+		
+			<li><a href="/categories/linux/" title="linux">linux<sup>20</sup></a></li>
+		
+			<li><a href="/categories/python/" title="python">python<sup>1</sup></a></li>
+		
+			<li><a href="/categories/share/" title="share">share<sup>1</sup></a></li>
+		
+			<li><a href="/categories/soft/" title="soft">soft<sup>4</sup></a></li>
+		
+			<li><a href="/categories/code/solution/" title="solution">solution<sup>1</sup></a></li>
+		
+			<li><a href="/categories/jQuery/solution/" title="solution">solution<sup>5</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/solution/" title="solution">solution<sup>25</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/database/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/solution/" title="solution">solution<sup>1</sup></a></li>
+		
+			<li><a href="/categories/java/solution/" title="solution">solution<sup>3</sup></a></li>
+		
+			<li><a href="/categories/linux/solution/" title="solution">solution<sup>4</sup></a></li>
+		
+			<li><a href="/categories/solution/thinking/" title="thinking">thinking<sup>5</sup></a></li>
+		
+			<li><a href="/categories/thinking/" title="thinking">thinking<sup>10</sup></a></li>
+		
+			<li><a href="/categories/vim/" title="vim">vim<sup>9</sup></a></li>
+		
+			<li><a href="/categories/thinking/前端优化/" title="前端优化">前端优化<sup>1</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/前端优化/" title="前端优化">前端优化<sup>1</sup></a></li>
+		
+			<li><a href="/categories/前端优化/" title="前端优化">前端优化<sup>8</sup></a></li>
+		
+			<li><a href="/categories/拓展/" title="拓展">拓展<sup>22</sup></a></li>
+		
+			<li><a href="/categories/java/拓展/" title="拓展">拓展<sup>2</sup></a></li>
+		
+			<li><a href="/categories/solution/拓展/" title="拓展">拓展<sup>4</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/拓展/" title="拓展">拓展<sup>2</sup></a></li>
+		
+			<li><a href="/categories/前端优化/拓展/" title="拓展">拓展<sup>1</sup></a></li>
+		
+			<li><a href="/categories/WordPress/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/服务器/" title="服务器">服务器<sup>13</sup></a></li>
+		
+			<li><a href="/categories/拓展/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/solution/服务器/" title="服务器">服务器<sup>3</sup></a></li>
+		
+			<li><a href="/categories/前端优化/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/solution/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/服务器/" title="服务器">服务器<sup>4</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/移动开发/" title="移动开发">移动开发<sup>1</sup></a></li>
+		
+			<li><a href="/categories/移动开发/" title="移动开发">移动开发<sup>3</sup></a></li>
+		
+			<li><a href="/categories/solution/自然/" title="自然">自然<sup>2</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/自然/" title="自然">自然<sup>1</sup></a></li>
+		
+			<li><a href="/categories/自然/" title="自然">自然<sup>17</sup></a></li>
+		
+		</ul>
+</div>
+
 
   
 <div class="tagslist">
@@ -214,8 +294,6 @@ storage['b'] = 'b';</pre>
 			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
 		
 			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
-		
-			<li><a href="/tags/Books/" title="Books">Books<sup>4</sup></a></li>
 		
 			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
 		
@@ -235,8 +313,6 @@ storage['b'] = 'b';</pre>
 		
 			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
 		
-			<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>43</sup></a></li>
-		
 			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
 		
 			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
@@ -244,6 +320,10 @@ storage['b'] = 'b';</pre>
 			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
 		
 			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/TransactionException/" title="TransactionException">TransactionException<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Varnish/" title="Varnish">Varnish<sup>1</sup></a></li>
 		
 		</ul>
 </div>
@@ -266,7 +346,7 @@ storage['b'] = 'b';</pre>
   <div class="tagcloudlist">
     <p class="asidetitle">标签云</p>
     <div class="tagcloudlist clearfix">
-       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/Books/" style="font-size: 13.33px;">Books</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript/" style="font-size: 20.00px;">JavaScript</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 16.67px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a>
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 20.00px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a><a href="/tags/closest-method/" style="font-size: 10.00px;">closest method</a><a href="/tags/cookie-free/" style="font-size: 10.00px;">cookie free</a>
     </div>
   </div>
 

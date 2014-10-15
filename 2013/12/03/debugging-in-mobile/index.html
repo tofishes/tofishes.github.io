@@ -1,0 +1,585 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>移动网页开发调试方法 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="ToFishes">
+    
+    <meta name="description" content="来源于： http://thx.github.io/mobile/debugging-in-mobile/
+三分靠 coding，七分 debugging!
+少年天才以外的我们，与其说是 coder,不如说是 debugger，都是一路调戏过来的，不好意思，是调试【本人口齿不清，发音不准，再发生类似事故请多多见谅】，因此当你 主动/被动 All in 了无线以后，你发现，知识的储备只是时间的积累和有意识的训练而已，可面对众多的 爱疯，案桌儿，山柴，内核不同，大小不一的设备。尼玛，没有个顺手的调试工具，简直是不能忍受的。
+于是，结合我做无线有 一个季度 以来的爽与痛，再扒扒找找，整理一份专门调戏无线设备的攻略如下，不对之处，请千万指正：">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2013/12/03/debugging-in-mobile/" title="移动网页开发调试方法" itemprop="url">移动网页开发调试方法</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2013-12-02T19:00:13.000Z" itemprop="datePublished">12月 3 2013</time>
+    更新日期:<time datetime="2014-10-15T10:58:07.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#三分靠_coding，七分_debugging!"><span class="toc-number">1.</span> <span class="toc-text">三分靠 coding，七分 debugging!</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac_下调试_爱疯_h5"><span class="toc-number">2.</span> <span class="toc-text">Mac 下调试 爱疯 h5</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、iPhone_+_Mac_+_safari_+_数据线调试普通页面"><span class="toc-number">2.1.</span> <span class="toc-text">一、iPhone + Mac + safari + 数据线调试普通页面</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#四、用_weinre_调试_本机/测试机/远程服务器_页面"><span class="toc-number">2.2.</span> <span class="toc-text">四、用 weinre 调试 本机/测试机/远程服务器 页面</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#五、利用_NProxy_代理"><span class="toc-number">2.3.</span> <span class="toc-text">五、利用 NProxy 代理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#六、利用_tinyproxy_调戏页面"><span class="toc-number">2.4.</span> <span class="toc-text">六、利用 tinyproxy 调戏页面</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#小结"><span class="toc-number">2.5.</span> <span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TODO"><span class="toc-number">3.</span> <span class="toc-text">TODO</span></a></li></ol>
+		</div>
+		
+		<p>来源于： <a href="http://thx.github.io/mobile/debugging-in-mobile/" target="_blank" rel="external">http://thx.github.io/mobile/debugging-in-mobile/</a></p>
+<h3 id="三分靠_coding，七分_debugging!">三分靠 coding，七分 debugging!</h3>
+<p>少年天才以外的我们，与其说是 coder,不如说是 debugger，都是一路调戏过来的，不好意思，是调试【本人口齿不清，发音不准，再发生类似事故请多多见谅】，因此当你 主动/被动 All in 了无线以后，你发现，知识的储备只是时间的积累和有意识的训练而已，可面对众多的 爱疯，案桌儿，山柴，内核不同，大小不一的设备。尼玛，没有个顺手的调试工具，简直是不能忍受的。</p>
+<p>于是，结合我做无线有 一个季度 以来的爽与痛，再扒扒找找，整理一份专门调戏无线设备的攻略如下，不对之处，请千万指正：</p>
+<a id="more"></a>
+
+<h3 id="Mac_下调试_爱疯_h5">Mac 下调试 爱疯 h5</h3>
+<ul>
+<li>杀伤面积：<em>*</em></li>
+<li>上手指数：<em>*</em></li>
+<li>调试效率：<em>*</em><br>首先说 Mac 是因为，木有 Mac，你 All in 个毛无线啊。一场无线 N 布斯的革命，都因苹果而生，缘苹果而疯。说一千，道一万，木有 Mac 你调戏她会累的伤筋动骨。</li>
+</ul>
+<h4 id="一、iPhone_+_Mac_+_safari_+_数据线调试普通页面">一、iPhone + Mac + safari + 数据线调试普通页面</h4>
+<p>以 <a href="http://thx.github.io/" target="_blank" rel="external">http://thx.github.io/</a> 为例，以下全部以它为素材。</p>
+<p>iPhone 上 safari 上打开 <a href="http://thx.github.io/，最好是连上" target="_blank" rel="external">http://thx.github.io/，最好是连上</a> wifi，开始输入网址，尼玛，手机上输入网址是极差的体验，尤其对于我这种不谈钢琴不谈吉他的男子，指尖上的无线痛苦不堪。拯救你的是<strong><em>二维码</em></strong>，请到<a href="http://chuangyi.taobao.com/util/qrcode" target="_blank" rel="external">http://chuangyi.taobao.com/util/qrcode</a> 输入，扫它（下图），</p>
+<div><img src="http://gtms01.alicdn.com/tps/i1/T1pnAUFclfXXbSLjnY-799-399.png" alt="创意中心二维码"></div><br><strong><em>尼玛～～～，safari 上木有二维码扫描工具咩！</em></strong><br><br>国产山柴就好到这儿，要啥有啥，打开 UC web，扫它，复制它，粘贴它到 safari，注意多图杀猫。<br><div class="dib-box" style="margin-bottom: 5px;"><br><div class="dib" style="width: 48%; display: inline-block; margin-right: 1%;"><img src="http://gtms01.alicdn.com/tps/i1/T1uSU2Fl0bXXcYjxAc-640-1136.jpg" alt="扫它"></div><br><div class="dib" style="width: 48%; display: inline-block; margin-right: 1%;"><img src="http://gtms01.alicdn.com/tps/i1/T1NnM0FodcXXcYjxAc-640-1136.jpg" alt="复制它"></div><br></div><br><div class="dib-box" style="margin-bottom: 5px;"><br><div class="dib" style="width: 48%; display: inline-block; margin-right: 1%;"><img src="http://gtms01.alicdn.com/tps/i1/T1E4cUFX0gXXcYjxAc-640-1136.jpg" alt="打开它"></div><br><div class="dib" style="width: 48%; display: inline-block;"><img src="http://gtms01.alicdn.com/tps/i1/T183UsFjBgXXcYjxAc-640-1136.jpg" alt="开启 web 检查"></div><br></div><br>这里务必按照下图指示，到 iPhone 的设置里面找到 高级，然后开启 web 检查器，允许 Mac 嗅探你的 iPhone page load（上图 4）:<br><br>然后拿到 iPhone 数据线，USB 连接到 Mac，在 Mac 上打开 safari，选择开发 -&gt; “某某” 的iPhone -&gt; thx.github.io：<br><div><img src="http://gtms01.alicdn.com/tps/i1/T1Eyo8FhVXXXX4Tunv-707-504.png" alt="safari 上开启调试"></div><br>于是 safari 的调戏器被你弄出来了，你刚好不小心鼠标移到了中间 Dom 树结构上，你会发现你 iPhone 上被同步映射上了该区域的浮层阴影：<br><br><img src="http://gtms01.alicdn.com/tps/i1/T1QR7YFb0eXXaPgscw-1105-941.png" alt="safari 调试器"><br><div class="dib-box" style="margin-bottom: 5px;"><br><div class="dib" style="width: 48%; display: inline-block; margin-right: 1%;"><img src="http://gtms01.alicdn.com/tps/i1/T1Ss73FaNcXXbzlxAc-640-1136.png" alt="被激活的区域"></div><br><div class="dib" style="width: 48%; display: inline-block;"><img src="http://gtms01.alicdn.com/tps/i1/T1Foc8FlJaXXcYjxAc-640-1136.jpg" alt="被激活的区域"></div><br></div><br>剩下的事情，就跟在 PC 上差不多，你在这个调试器里面，加断点，然后 iPhone 上刷新页面，或者触发交互，就可以调试 js，样式同理，不再赘述。<br><br>##### 二、利用 auto<em>response 代理线上文件到本地调试<br><br><em>   杀伤面积：**</em><br><em>   上手指数：<em>**</em></em><br><em>   调试效率：<em>**</em></em><br><a href="https://github.com/qhwa/auto_response?source=c" target="_blank" rel="external">auto_response</a> 是我从业一来见过的最佳调试/代理利器，没有之一，当然，它是我们 mux 如彼老师的开源之物，绝对流弊，pc 无线统统拿下，来，试玩一把：<br><br>auto_response 只支持 <em>nix， windows 的同学可以安装个虚拟机，跑上 </em>nix 系统，同时要求你有 ruby 环境，最好是 ruby 1.9+。<br><br>安装：<br><div class="highlight"><br><br>    gem install <span class="s1">‘auto_response’</span><br>    <code>&lt;/pre&gt;
+    &lt;/div&gt;
+    基本命令就这么多，so easy:
+    &lt;div class=&quot;highlight&quot;&gt;
+    &lt;pre&gt;</code>ar start<br><br>    ar status <span class="c">#check server status</span><br>    ar stop   <span class="c">#stop proxy server</span><br>    <code>&lt;/pre&gt;
+    &lt;/div&gt;
+    然后，要设置代理，推荐用 chrome 插件 SwitchySharp, 建立一个情景模式，手动配置 HTTP 代理到 9000 端口。
+
+    ![SwitchySharp](http://gtms01.alicdn.com/tps/i1/T1gIw.FcRXXXX6QWTn-885-558.png)
+
+    接下来，设置代理配置文件，在：
+    &lt;div class=&quot;highlight&quot;&gt;
+    &lt;pre&gt;</code><span class="nv">$HOME</span>/.auto_response/rules<br>    <code>&lt;/pre&gt;
+    &lt;/div&gt;
+    编辑它，里面都有详细注释，不多讲，本文要调戏 thx.github.io，因此我代理下里面的 post.js 和 gateway.css 到我本地，同时在手机上观看效果。
+
+    我加了这么两句：
+    &lt;div class=&quot;highlight&quot;&gt;
+    &lt;pre&gt;</code><span class="n">url</span> <span class="s2">“<a href="http://thx.github.io/assets/post.js" target="_blank" rel="external">http://thx.github.io/assets/post.js</a>“</span><br>    <span class="n">goto</span> <span class="s2">“/Users/huanglong/Projects/git/thx.github.io/assets/post.js”</span><br><br>    <span class="n">url</span> <span class="s2">“<a href="http://thx.github.io/assets/gateway.css" target="_blank" rel="external">http://thx.github.io/assets/gateway.css</a>“</span><br>    <span class="n">goto</span> <span class="s2">“/Users/huanglong/Projects/git/thx.github.io/assets/gateway.css”</span><br>    `<br>    </div><br>    这样，当在 PC 浏览器中打开 <a href="http://thx.github.io" target="_blank" rel="external">http://thx.github.io</a> 时候，实际请求的样式和脚本，都是我本机下的。<br><br>    然后配置 iPhone ,找到 设置 -&gt; 通用 -&gt; VPN，打开 VPN， 将代理调为 手动模式，填入本机 ip, 端口号填 9000，保存后。用任何一个浏览器打开 thx.github.io ，都是访问的我本机上的 post.js 和 assets.js。<br><br>    这里如果在 iPhone 上打开 safrai，按照上面策略 1 的方式打开本机的 safrai，就可以在本机上，调试和修改本机的被代理文件，同时在手机上看效果。<br><br>    现在进入 **</em>暴走<em><strong> 模式：<br><br>    如果除了代理下 js，之外，想更抓到每一个从 auto_response 手中流走的包，可以启动命令行调试模式：<br>    <div class="highlight"><br>    <pre><code>ar start -t</code></pre><br>    </div><br>    然后，浏览器打开 <a href="http://127.0.0.1:9090，刷新下手机上的" target="_blank" rel="external">http://127.0.0.1:9090，刷新下手机上的</a> thx.github.io 你将看到如下界面：<br><br>    <img src="http://gtms01.alicdn.com/tps/i1/T1l8Q5Fg4cXXXYyYck-1067-861.png" alt="9090控制台"><br><br>    切换到控制台，你将陆续看到这些打印信息：<br><br>    <img src="http://gtms01.alicdn.com/tps/i1/T1ZDE8FflbXXbjoWQk-1070-825.png" alt="控制台"><br>    <img src="http://gtms01.alicdn.com/tps/i1/T1wA.5FbpcXXbjoWQk-1070-825.png" alt="控制台"><br><br>    显然，命令行里所有的请求更一目了然，如上图，能看到我加的一句：<br>    <div class="highlight"><br>    <pre><code>&lt;span class=&quot;nx&quot;&gt;alert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;</code></pre><br>    </div><br>    。结合下 Mac 下的 safari，无敌调试模式就这样暴走了，虐杀一切 bugs。<br><br>    不得不提一下， auto_reponse 不仅能代理 css/js，包括整个的 html，甚至 xhr 都完全木有问题，还有最大的一个亮点是可以针对手机设置 </strong></em>网络延迟_**，在配置文件里，两行代码搞定：<br>    <div class="highlight"><br>    <pre><code>url &lt;span class=&quot;s2&quot;&gt;&quot;http://thx.github.io&quot;&lt;/span&gt;
+    delay 5</code></pre><br>    </div>
+
+<pre><code><span class="preprocessor">#### 三、用 charles 抓包、代理线上文件到本地</span>
+</code></pre><ul>
+<li>杀伤面积：<strong>*</strong></li>
+<li>上手指数：<em>*</em></li>
+<li><p>调试效率：<em>**</em><br><a href="http://www.charlesproxy.com/" target="_blank" rel="external">charles</a> 作为一个专业抓包工具，牛逼之处在于可以自定义上下行网速、External Proxy、反向代理配置简单、可解析AMF协议数据，可以抓取 FileReference.upload 请求和返回的数据，而其它浏览器抓包工具往往不易做到这一点。</p>
+<p>配置也很简单，本机配置网络代理，charles 默认是 8888 端口：</p>
+<p><img src="http://gtms01.alicdn.com/tps/i1/T1q236Fd0bXXaSIqTq-782-694.png" alt="mac 本机配置代理"></p>
+<p>打开 charles，从浏览器打开要抓包的页面 thx.github.io，即可看到数据包：左边的 sequence 和 structure。最迅捷的方式，就是直接在 structure 中，找到要代理的 js 和 css, 右键配置 map 目录，将线上地址映射到本地（下图 1）：</p>
+<p><img src="http://gtms01.alicdn.com/tps/i1/T1z2g3FmpcXXcBo4YY-1161-853.png" alt=""><br><img src="http://gtms01.alicdn.com/tps/i1/T1Upw2FiBcXXX1Lksy-747-550.png" alt=""></p>
+<p>ok, 到这里，显然 charles 可以和 iPhone 结合来用，调试，原理同上 二。将手机 VPN 代理到本地 ip，端口填 8888，不仅可以抓手机上的包，同样可以调试 js/css ，在手机上直接看样式。</p>
+<h4 id="四、用_weinre_调试_本机/测试机/远程服务器_页面">四、用 weinre 调试 本机/测试机/远程服务器 页面</h4>
+</li>
+<li><p>杀伤面积：<strong>*</strong></p>
+</li>
+<li>上手指数：<em>*</em></li>
+<li><p>调试效率：<em>**</em><br><a href="http://people.apache.org/%7Epmuellr/weinre/docs/latest/Home.html" target="_blank" rel="external">weinre</a> 是一个远程无线调试利器，现在已是 Apache 的一个开源项目, 我们用 npm 安装：<br><div class="highlight"><br><pre><code>sudo npm -g install weinre</code></pre><br></div><br>在 home 路径下，创建配置文件<br><div class="highlight"><br><pre><code>&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ~
+mkdir .weinre
+&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; .weinre
+vi server.properties</code></pre><br></div><br>粘贴如下内容，我配置了 8081 端口，默认是 8000 端口：<br><div class="highlight"><br><pre><code>boundHost:    -all-
+httpPort:     8081
+reuseAddr:    &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;
+readTimeout:  1
+deathTimeout: 5</code></pre><br></div><br>命令行中，启动 weinre:<br><div class="highlight"><br><pre><code>weinre</code></pre><br></div><br>本机/测试机 等，起了一个要被调试的站点服务，以我的为例，在我本机起了一个 ruby 服务，即利用生成 thx.github.io 静态站点的编译工具： jekyll。<br>到 thx.github.io 目录下，直接<br><div class="highlight"><br><pre><code>jekyll serve -w</code></pre><br></div><br>跑起来编译服务，默认是跑在 4000 端口，可以用<br><div class="highlight"><br><pre><code>http://localhost:4000
+http://0.0.0.0:4000
+http://127.0.0.1:4000
+http://host-domain-to-localhost:4000</code></pre><br></div><br>均可以访问到该服务，但我们要做的是用 IP 访问，即 ifconfig 拿到本机 IP,我的是：<a href="http://10.74.3.192/" target="_blank" rel="external">http://10.74.3.192/</a></p>
+<p>此时, 在本机浏览器，比如 chrome 中打开：<br><div class="highlight"><br><pre><code>http://10.74.3.192:8081/client/</code></pre><br></div><br>那么你极有希望看到这个 weinre 的本地调试窗口：</p>
+<p><img src="http://gtms01.alicdn.com/tps/i1/T1Hv30FiVdXXcMh9wZ-901-941.png" alt="weinre 调试窗口"></p>
+<p>然后，加入如下通信脚本，加到本地站点下调试页面的底部：<br><div class="highlight"><br><pre><code>http://10.74.3.192:8081/target/target-script-min.js</code></pre><br></div><br>比如我的是加到 jekyll layout 里模板页面的底部：</p>
+<p><img src="http://gtms01.alicdn.com/tps/i1/T1dko_Fd4XXXc.73QK-1338-1042.png" alt="加入通信脚本"></p>
+<p>接下来，拿起 爱疯/案桌儿/山柴 机，浏览器扫一个二维码，用 uc-web/qq-web/safrai/任何浏览器，打开：<br><div class="highlight"><br><pre><code>http://10.74.3.192:4000</code></pre><br></div><br>就访问到了 thx.github.io 的本地站点,在回头看 weinre 的本地调试窗口:</p>
+<p><img src="http://gtms01.alicdn.com/tps/i1/T19NkWFoFeXXb7bKAk-1042-1091.png" alt="weinre 调试窗口"></p>
+<p>从 Remote 能看到目标页面信息，客户端信息，以及服务端的信息，可以从 Remote 切换到 Elements, 只要手机刷新，这里会同步刷新，于是你本地调试样式，修改样式神马的都无障碍了。</p>
+<p><img src="http://gtms01.alicdn.com/tps/i1/T14DA8FoNXXXb7bKAk-1042-1091.png" alt="weinre 调试窗口"></p>
+<p>至于调试 JS 代码，还得研究一下。</p>
+<h4 id="五、利用_NProxy_代理">五、利用 NProxy 代理</h4>
+</li>
+<li><p>杀伤面积：<strong>*</strong></p>
+</li>
+<li>上手指数：<em>**</em></li>
+<li><p>调试效率：<em>**</em><br><a href="https://github.com/goddyZhao/nproxy" target="_blank" rel="external">Nproxy</a> 我阿里原厂工的力作，鄙人以为：虽无 Fiddler, Charles, Rythem and Tinyproxy 出名，但实用程度毫不逊色。支持多平台，支持 combo 解耦与目录映射。</p>
+<p>安装简单：<br><div class="highlight"><br><pre><code>npm install -g nproxy</code></pre><br></div><br>在任一项目目录下，创建 replace_rule.js，它默认是跑在 8989 端口：</p>
+<p>基本用法：<br><div class="highlight"><br><pre>`Usage: nproxy <span class="o">[</span>options<span class="o">]</span></pre></div></p>
+<p>Options:</p>
+<p>  -h, —help         output usage information<br>  -V, —version      output the version number<br>  -l, —list <span class="o">[</span>list<span class="o">]</span>  Specify the replace rule file<br>  -p, —port <span class="o">[</span>port<span class="o">]</span>  Specify the port nproxy will listen on<span class="o">(</span>8989 by default<span class="o">)</span><br>  -t, —timeout <span class="o">[</span>timeout<span class="o">]</span> Specify the request timeout <span class="o">(</span>5 seconds by default<span class="o">)</span><br><code>&lt;/pre&gt;
+&lt;/div&gt;
+我要调戏 thx，所以，就在 thx.github.com 的目录下建一个replace_rule.js，配置如下：
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre&gt;</code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">[</span></p>
+<p>  <span class="c1">// 1. replace single file with local one</span><br>  <span class="p">{</span></p>
+<pre><code><span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"nx"</span>&gt;</span>pattern<span class="tag">&lt;/<span class="title">span</span>&gt;</span><span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"o"</span>&gt;</span>:<span class="tag">&lt;/<span class="title">span</span>&gt;</span> <span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"s1"</span>&gt;</span>'http://thx.github.io/assets/post.js'<span class="tag">&lt;/<span class="title">span</span>&gt;</span><span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"p"</span>&gt;</span>,<span class="tag">&lt;/<span class="title">span</span>&gt;</span>      <span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"c1"</span>&gt;</span>// Match url you wanna replace<span class="tag">&lt;/<span class="title">span</span>&gt;</span>
+<span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"nx"</span>&gt;</span>responder<span class="tag">&lt;/<span class="title">span</span>&gt;</span><span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"o"</span>&gt;</span>:<span class="tag">&lt;/<span class="title">span</span>&gt;</span>  <span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"s2"</span>&gt;</span>"/Users/huanglong/Projects/git/thx.github.io/assets/post.js"<span class="tag">&lt;/<span class="title">span</span>&gt;</span>
+</code></pre><p>  <span class="p">},</span></p>
+<p>  <span class="p">{</span></p>
+<pre><code><span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"nx"</span>&gt;</span>pattern<span class="tag">&lt;/<span class="title">span</span>&gt;</span><span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"o"</span>&gt;</span>:<span class="tag">&lt;/<span class="title">span</span>&gt;</span> <span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"s1"</span>&gt;</span>'http://thx.github.io/assets/gateway.css'<span class="tag">&lt;/<span class="title">span</span>&gt;</span><span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"p"</span>&gt;</span>,<span class="tag">&lt;/<span class="title">span</span>&gt;</span>      <span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"c1"</span>&gt;</span>// Match url you wanna replace<span class="tag">&lt;/<span class="title">span</span>&gt;</span>
+<span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"nx"</span>&gt;</span>responder<span class="tag">&lt;/<span class="title">span</span>&gt;</span><span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"o"</span>&gt;</span>:<span class="tag">&lt;/<span class="title">span</span>&gt;</span>  <span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"s2"</span>&gt;</span>"/Users/huanglong/Projects/git/thx.github.io/assets/gateway.css"<span class="tag">&lt;/<span class="title">span</span>&gt;</span>
+</code></pre><p>  <span class="p">}</span><br> <span class="p">]</span><br><code>&lt;/pre&gt;
+&lt;/div&gt;
+把 NProxy 跑起来
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre&gt;</code><span class="nb">cd</span> /Users/huanglong/Projects/git/thx.github.io<br>nproxy -l replace.js<br>`<br><br>同时，利用 SwitchySharp 创建个 NProxy 的情景模式，在 chrome 下代理被调试页面，调试手机，依然是需要配置本机网络代理，然后，手机上 VPN 代理到本机 IP。</p>
+<p>Nproxy 不仅能映射线上文件到本地，同样能映射本地服务中的文件到线上，正则适配，图片目录，combo 解耦等，各位自行按需配置就行。</p>
+<h4 id="六、利用_tinyproxy_调戏页面">六、利用 tinyproxy 调戏页面</h4>
+</li>
+<li><p>杀伤面积：<strong>*</strong></p>
+</li>
+<li>上手指数：**</li>
+<li>调试效率：<em>*</em><br>上文提到了 tinyproxy， 安装也很简单：<br><div class="highlight"><br><pre><code>brew install tinyproxy</code></pre><br></div><br>任一目录创建 tinyproxy.conf，然后执行：<br><div class="highlight"><br><pre><code>tinyproxy -c tinyproxy.conf</code></pre><br></div><br>如果不加 -c 参数，就是默认在安装目录：<br><div class="highlight"><br><pre>`/usr/local/etc/tinyproxy.conf</pre></div></li>
+</ul>
+<p><br>具体配置我就不再贴出，默认 tinyproxy.conf 注解很详细。代理原理同上，默认走 8888 端口。</p>
+<h4 id="小结">小结</h4>
+<p>总体下来，无线上调试并没有太复杂，跟我们 PC 上调试页面差不多，只是配置过程会稍微繁复一些。毕竟工具只是一种手段，实现原理都大同小异，易用性则看个人平台下的环境配置与编程习惯。</p>
+<p>我们的主要作战场景是在 web h5 和 Hybrid，尤其 Hybrid 会是以后的主战场，Hybrid 作为混合模式移动应用，具“Native App 良好用户交互体验的优势” 和 “Web App 跨平台开发的优势”，它又分为：多View混合型，单 View 混合型，Web 主体型，如此多样的开发环境，会要求我们具备不同场景下的快速调试能力，更便携的调试手段，还期待与各位一起挖掘和研究，谨以此文，做抛砖引玉用。</p>
+<p>PS: 其它的调试手段：后面慢慢补充。</p>
+<h3 id="TODO">TODO</h3>
+<ul>
+<li>nginx 反向代理</li>
+<li>fiddler 结合 ProxyDroid 代理</li>
+<li><a href="https://developers.google.com/chrome-developer-tools/docs/remote-debugging%5D(https://developers.google.com/chrome-developer-tools/docs/remote-debugging" target="_blank" rel="external">Mac 下调试 android</a></li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/调试/">调试</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/html-amp-css/">html&amp;css</a>►<a class="article-category-link" href="/categories/html-amp-css/JavaScript/">JavaScript</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2013/12/03/debugging-in-mobile/" data-title="移动网页开发调试方法 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2013/12/04/weinre-is-a-mobile-develop-debug-tool/" title="移动端开发的调试工具Weinre">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  移动端开发的调试工具Weinre</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2013/12/02/js-base64-encode-and-decode/"  title="js原生支持base64编码与解码">
+ <strong>NEXT:</strong><br/> 
+ <span>js原生支持base64编码与解码
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#三分靠_coding，七分_debugging!"><span class="toc-number">1.</span> <span class="toc-text">三分靠 coding，七分 debugging!</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mac_下调试_爱疯_h5"><span class="toc-number">2.</span> <span class="toc-text">Mac 下调试 爱疯 h5</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、iPhone_+_Mac_+_safari_+_数据线调试普通页面"><span class="toc-number">2.1.</span> <span class="toc-text">一、iPhone + Mac + safari + 数据线调试普通页面</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#四、用_weinre_调试_本机/测试机/远程服务器_页面"><span class="toc-number">2.2.</span> <span class="toc-text">四、用 weinre 调试 本机/测试机/远程服务器 页面</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#五、利用_NProxy_代理"><span class="toc-number">2.3.</span> <span class="toc-text">五、利用 NProxy 代理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#六、利用_tinyproxy_调戏页面"><span class="toc-number">2.4.</span> <span class="toc-text">六、利用 tinyproxy 调戏页面</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#小结"><span class="toc-number">2.5.</span> <span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TODO"><span class="toc-number">3.</span> <span class="toc-text">TODO</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		<a href="https://github.com/tofishes" target="_blank" title="github"></a>
+		
+		
+		
+	</div>
+</div>
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/JavaScript/" title="JavaScript">JavaScript<sup>2</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/" title="JavaScript">JavaScript<sup>41</sup></a></li>
+		
+			<li><a href="/categories/code/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Books/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/solution/WordPress/" title="WordPress">WordPress<sup>3</sup></a></li>
+		
+			<li><a href="/categories/WordPress/" title="WordPress">WordPress<sup>2</sup></a></li>
+		
+			<li><a href="/categories/code/" title="code">code<sup>7</sup></a></li>
+		
+			<li><a href="/categories/database/" title="database">database<sup>5</sup></a></li>
+		
+			<li><a href="/categories/code/html-amp-css/" title="html&amp;amp;css">html&amp;amp;css<sup>1</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/" title="html&amp;amp;css">html&amp;amp;css<sup>23</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/jQuery/" title="jQuery">jQuery<sup>2</sup></a></li>
+		
+			<li><a href="/categories/code/jQuery/" title="jQuery">jQuery<sup>1</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/" title="jQuery">jQuery<sup>2</sup></a></li>
+		
+			<li><a href="/categories/jQuery/" title="jQuery">jQuery<sup>17</sup></a></li>
+		
+			<li><a href="/categories/java/" title="java">java<sup>11</sup></a></li>
+		
+			<li><a href="/categories/linux/" title="linux">linux<sup>20</sup></a></li>
+		
+			<li><a href="/categories/python/" title="python">python<sup>1</sup></a></li>
+		
+			<li><a href="/categories/share/" title="share">share<sup>1</sup></a></li>
+		
+			<li><a href="/categories/soft/" title="soft">soft<sup>4</sup></a></li>
+		
+			<li><a href="/categories/code/solution/" title="solution">solution<sup>1</sup></a></li>
+		
+			<li><a href="/categories/jQuery/solution/" title="solution">solution<sup>5</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/solution/" title="solution">solution<sup>25</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/database/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/solution/" title="solution">solution<sup>1</sup></a></li>
+		
+			<li><a href="/categories/java/solution/" title="solution">solution<sup>3</sup></a></li>
+		
+			<li><a href="/categories/linux/solution/" title="solution">solution<sup>4</sup></a></li>
+		
+			<li><a href="/categories/solution/thinking/" title="thinking">thinking<sup>5</sup></a></li>
+		
+			<li><a href="/categories/thinking/" title="thinking">thinking<sup>10</sup></a></li>
+		
+			<li><a href="/categories/vim/" title="vim">vim<sup>9</sup></a></li>
+		
+			<li><a href="/categories/thinking/前端优化/" title="前端优化">前端优化<sup>1</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/前端优化/" title="前端优化">前端优化<sup>1</sup></a></li>
+		
+			<li><a href="/categories/前端优化/" title="前端优化">前端优化<sup>8</sup></a></li>
+		
+			<li><a href="/categories/拓展/" title="拓展">拓展<sup>22</sup></a></li>
+		
+			<li><a href="/categories/java/拓展/" title="拓展">拓展<sup>2</sup></a></li>
+		
+			<li><a href="/categories/solution/拓展/" title="拓展">拓展<sup>4</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/拓展/" title="拓展">拓展<sup>2</sup></a></li>
+		
+			<li><a href="/categories/前端优化/拓展/" title="拓展">拓展<sup>1</sup></a></li>
+		
+			<li><a href="/categories/WordPress/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/服务器/" title="服务器">服务器<sup>13</sup></a></li>
+		
+			<li><a href="/categories/拓展/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/solution/服务器/" title="服务器">服务器<sup>3</sup></a></li>
+		
+			<li><a href="/categories/前端优化/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/solution/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/服务器/" title="服务器">服务器<sup>4</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/移动开发/" title="移动开发">移动开发<sup>1</sup></a></li>
+		
+			<li><a href="/categories/移动开发/" title="移动开发">移动开发<sup>3</sup></a></li>
+		
+			<li><a href="/categories/solution/自然/" title="自然">自然<sup>2</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/自然/" title="自然">自然<sup>1</sup></a></li>
+		
+			<li><a href="/categories/自然/" title="自然">自然<sup>17</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/TransactionException/" title="TransactionException">TransactionException<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Varnish/" title="Varnish">Varnish<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 20.00px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a><a href="/tags/closest-method/" style="font-size: 10.00px;">closest method</a><a href="/tags/cookie-free/" style="font-size: 10.00px;">cookie free</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+  </body>
+</html>

@@ -1,0 +1,561 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>15个Linux Wget下载实例用法说明 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="ToFishes">
+    
+    <meta name="description" content="来源于： http://www.lampblog.net/2011/09/15个linux-wget下载实例终极指南/
+&amp;nbsp;
+Linux wget是一个下载文件的工具，它用在命令行下。对于Linux用户是必不可少的工具，尤其对于网络管理员，经常要下载一些软件或从远程服务器恢复备份到本地服务器。如果我们使用虚拟主机，处理这样的事务我们只能先从远程服务器下载到我们电脑磁盘，然后再用ftp工具上传到服务器。这样既浪费时间又浪费精力，那不没办法的事。而到了Linux VPS，它则可以直接下载到服务器而不用经过上传这一步。wget工具体积小但功能完善，它支持断点下载功能，同时支持FTP和HTTP下载方式，支持代理服务器和设置起来方便简单。下面我们以实例的形式说明怎么使用wget。">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2011/10/14/15-linux-wget-usages/" title="15个Linux Wget下载实例用法说明" itemprop="url">15个Linux Wget下载实例用法说明</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2011-10-13T18:41:58.000Z" itemprop="datePublished">10月 14 2011</time>
+    更新日期:<time datetime="2014-10-15T10:58:07.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>来源于： <a href="http://www.lampblog.net/2011/09/15个linux-wget下载实例终极指南/" target="_blank" rel="external">http://www.lampblog.net/2011/09/15个linux-wget下载实例终极指南/</a></p>
+<p>&nbsp;</p>
+<p>Linux wget是一个下载文件的工具，它用在命令行下。对于Linux用户是必不可少的工具，尤其对于网络管理员，经常要下载一些软件或从远程服务器恢复备份到本地服务器。如果我们使用虚拟主机，处理这样的事务我们只能先从远程服务器下载到我们电脑磁盘，然后再用ftp工具上传到服务器。这样既浪费时间又浪费精力，那不没办法的事。而到了Linux VPS，它则可以直接下载到服务器而不用经过上传这一步。wget工具体积小但功能完善，它支持断点下载功能，同时支持FTP和HTTP下载方式，支持代理服务器和设置起来方便简单。下面我们以实例的形式说明怎么使用wget。</p>
+<a id="more"></a>
+
+<p><strong>1、使用wget下载单个文件</strong></p>
+<p>以下的例子是从网络下载一个文件并保存在当前目录</p>
+<p>wget <a href="http://cn.wordpress.org/wordpress-3.1-zh_CN.zip" target="_blank" rel="external">http://cn.wordpress.org/wordpress-3.1-zh_CN.zip</a></p>
+<p>在下载的过程中会显示进度条，包含（下载完成百分比，已经下载的字节，当前下载速度，剩余下载时间）。</p>
+<p><strong>2、使用wget -O下载并以不同的文件名保存</strong></p>
+<p>wget默认会以最后一个符合”/”的后面的字符来命令，对于动态链接的下载通常文件名会不正确。</p>
+<p>错误：下面的例子会下载一个文件并以名称download.php?id=1080保存</p>
+<p>wget <a href="http://www.centos.bz/download?id=1" target="_blank" rel="external">http://www.centos.bz/download?id=1</a></p>
+<p>即使下载的文件是zip格式，它仍然以download.php?id=1080命令。</p>
+<p>正确：为了解决这个问题，我们可以使用参数-O来指定一个文件名：</p>
+<p>wget -O wordpress.zip <a href="http://www.centos.bz/download.php?id=1080" target="_blank" rel="external">http://www.centos.bz/download.php?id=1080</a></p>
+<p><strong>3、使用wget –limit -rate限速下载</strong></p>
+<p>当你执行wget的时候，它默认会占用全部可能的宽带下载。但是当你准备下载一个大文件，而你还需要下载其它文件时就有必要限速了。</p>
+<p>wget –limit-rate=300k <a href="http://cn.wordpress.org/wordpress-3.1-zh_CN.zip" target="_blank" rel="external">http://cn.wordpress.org/wordpress-3.1-zh_CN.zip</a></p>
+<p><strong>4、使用wget -c断点续传</strong></p>
+<p>使用wget -c重新启动下载中断的文件:</p>
+<p>wget -c <a href="http://cn.wordpress.org/wordpress-3.1-zh_CN.zip" target="_blank" rel="external">http://cn.wordpress.org/wordpress-3.1-zh_CN.zip</a></p>
+<p>对于我们下载大文件时突然由于网络等原因中断非常有帮助，我们可以继续接着下载而不是重新下载一个文件。需要继续中断的下载时可以使用-c参数。</p>
+<p><strong>5、使用wget -b后台下载</strong></p>
+<p>对于下载非常大的文件的时候，我们可以使用参数-b进行后台下载。</p>
+<p>wget -b <a href="http://cn.wordpress.org/wordpress-3.1-zh_CN.zip" target="_blank" rel="external">http://cn.wordpress.org/wordpress-3.1-zh_CN.zip</a></p>
+<p>Continuing in background, pid 1840.</p>
+<p>Output will be written to `wget-log’.</p>
+<p>你可以使用以下命令来察看下载进度</p>
+<p>tail -f wget-log</p>
+<p><strong>6、伪装代理名称下载</strong></p>
+<p>有些网站能通过根据判断代理名称不是浏览器而拒绝你的下载请求。不过你可以通过–user-agent参数伪装。</p>
+<p>wget –user-agent=”Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.204 Safari/534.16″ 下载链接</p>
+<p><strong>7、使用wget –spider测试下载链接</strong></p>
+<p>当你打算进行定时下载，你应该在预定时间测试下载链接是否有效。我们可以增加–spider参数进行检查。</p>
+<p>wget –spider URL</p>
+<p>如果下载链接正确，将会显示</p>
+<p>wget –spider URL</p>
+<p>Spider mode enabled. Check if remote file exists.</p>
+<p>HTTP request sent, awaiting response… 200 OK</p>
+<p>Length: unspecified [text/html]</p>
+<p>Remote file exists and could contain further links,</p>
+<p>but recursion is disabled — not retrieving.</p>
+<p>这保证了下载能在预定的时间进行，但当你给错了一个链接，将会显示如下错误</p>
+<p>wget –spider url</p>
+<p>Spider mode enabled. Check if remote file exists.</p>
+<p>HTTP request sent, awaiting response… 404 Not Found</p>
+<p>Remote file does not exist — broken link!!!</p>
+<p>你可以在以下几种情况下使用spider参数：</p>
+<p>定时下载之前进行检查</p>
+<p>间隔检测网站是否可用</p>
+<p>检查网站页面的死链接</p>
+<p><strong>8、使用wget –tries增加重试次数</strong></p>
+<p>如果网络有问题或下载一个大文件也有可能失败。wget默认重试20次连接下载文件。如果需要，你可以使用–tries增加重试次数。</p>
+<p>wget –tries=40 URL</p>
+<p><strong>9、使用wget -i下载多个文件</strong></p>
+<p>首先，保存一份下载链接文件</p>
+<p>cat &gt; filelist.txt</p>
+<p>url1</p>
+<p>url2</p>
+<p>url3</p>
+<p>url4</p>
+<p>接着使用这个文件和参数-i下载</p>
+<p>wget -i filelist.txt</p>
+<p><strong>10、使用wget –mirror镜像网站</strong></p>
+<p>下面的例子是下载整个网站到本地。</p>
+<p>wget –mirror -p –convert-links -P ./LOCAL URL</p>
+<p>–miror:开户镜像下载</p>
+<p>-p:下载所有为了html页面显示正常的文件</p>
+<p>–convert-links:下载后，转换成本地的链接</p>
+<p>-P ./LOCAL：保存所有文件和目录到本地指定目录</p>
+<p><strong>11、使用wget –reject过滤指定格式下载</strong></p>
+<p>你想下载一个网站，但你不希望下载图片，你可以使用以下命令。</p>
+<p>wget –reject=gif url</p>
+<p><strong>12、使用wget -o把下载信息存入日志文件</strong></p>
+<p>你不希望下载信息直接显示在终端而是在一个日志文件，可以使用以下命令：</p>
+<p>wget -o download.log URL</p>
+<p><strong>13、使用wget -Q限制总下载文件大小</strong></p>
+<p>当你想要下载的文件超过5M而退出下载，你可以使用以下命令:</p>
+<p>wget -Q5m -i filelist.txt</p>
+<p>注意：这个参数对单个文件下载不起作用，只能递归下载时才有效。</p>
+<p><strong>14、使用wget -r -A下载指定格式文件</strong></p>
+<p>可以在以下情况使用该功能</p>
+<p>下载一个网站的所有图片</p>
+<p>下载一个网站的所有视频</p>
+<p>下载一个网站的所有PDF文件</p>
+<p>wget -r -A.pdf url</p>
+<p><strong>15、使用wget FTP下载</strong></p>
+<p>你可以使用wget来完成ftp链接的下载。</p>
+<p>使用wget匿名ftp下载</p>
+<p>wget ftp-url</p>
+<p>使用wget用户名和密码认证的ftp下载</p>
+<p>wget –ftp-user=USERNAME –ftp-password=PASSWORD url</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/linux/">linux</a><a href="/tags/wget/">wget</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/linux/">linux</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2011/10/14/15-linux-wget-usages/" data-title="15个Linux Wget下载实例用法说明 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2011/10/17/ubuntu-server-php-config/" title="Ubuntu server php config及配置mongodb驱动">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Ubuntu server php config及配置mongodb驱动</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2011/10/13/wordpress-plugin-add-post-meta/"  title="wordpress插件 - 实现文章发布的固定元数据信息添加">
+ <strong>NEXT:</strong><br/> 
+ <span>wordpress插件 - 实现文章发布的固定元数据信息添加
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		<a href="https://github.com/tofishes" target="_blank" title="github"></a>
+		
+		
+		
+	</div>
+</div>
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/JavaScript/" title="JavaScript">JavaScript<sup>2</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/" title="JavaScript">JavaScript<sup>41</sup></a></li>
+		
+			<li><a href="/categories/code/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Books/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/solution/WordPress/" title="WordPress">WordPress<sup>3</sup></a></li>
+		
+			<li><a href="/categories/WordPress/" title="WordPress">WordPress<sup>2</sup></a></li>
+		
+			<li><a href="/categories/code/" title="code">code<sup>7</sup></a></li>
+		
+			<li><a href="/categories/database/" title="database">database<sup>5</sup></a></li>
+		
+			<li><a href="/categories/code/html-amp-css/" title="html&amp;amp;css">html&amp;amp;css<sup>1</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/" title="html&amp;amp;css">html&amp;amp;css<sup>23</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/jQuery/" title="jQuery">jQuery<sup>2</sup></a></li>
+		
+			<li><a href="/categories/code/jQuery/" title="jQuery">jQuery<sup>1</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/" title="jQuery">jQuery<sup>2</sup></a></li>
+		
+			<li><a href="/categories/jQuery/" title="jQuery">jQuery<sup>17</sup></a></li>
+		
+			<li><a href="/categories/java/" title="java">java<sup>11</sup></a></li>
+		
+			<li><a href="/categories/linux/" title="linux">linux<sup>20</sup></a></li>
+		
+			<li><a href="/categories/python/" title="python">python<sup>1</sup></a></li>
+		
+			<li><a href="/categories/share/" title="share">share<sup>1</sup></a></li>
+		
+			<li><a href="/categories/soft/" title="soft">soft<sup>4</sup></a></li>
+		
+			<li><a href="/categories/code/solution/" title="solution">solution<sup>1</sup></a></li>
+		
+			<li><a href="/categories/jQuery/solution/" title="solution">solution<sup>5</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/solution/" title="solution">solution<sup>25</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/database/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/solution/" title="solution">solution<sup>1</sup></a></li>
+		
+			<li><a href="/categories/java/solution/" title="solution">solution<sup>3</sup></a></li>
+		
+			<li><a href="/categories/linux/solution/" title="solution">solution<sup>4</sup></a></li>
+		
+			<li><a href="/categories/solution/thinking/" title="thinking">thinking<sup>5</sup></a></li>
+		
+			<li><a href="/categories/thinking/" title="thinking">thinking<sup>10</sup></a></li>
+		
+			<li><a href="/categories/vim/" title="vim">vim<sup>9</sup></a></li>
+		
+			<li><a href="/categories/thinking/前端优化/" title="前端优化">前端优化<sup>1</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/前端优化/" title="前端优化">前端优化<sup>1</sup></a></li>
+		
+			<li><a href="/categories/前端优化/" title="前端优化">前端优化<sup>8</sup></a></li>
+		
+			<li><a href="/categories/拓展/" title="拓展">拓展<sup>22</sup></a></li>
+		
+			<li><a href="/categories/java/拓展/" title="拓展">拓展<sup>2</sup></a></li>
+		
+			<li><a href="/categories/solution/拓展/" title="拓展">拓展<sup>4</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/拓展/" title="拓展">拓展<sup>2</sup></a></li>
+		
+			<li><a href="/categories/前端优化/拓展/" title="拓展">拓展<sup>1</sup></a></li>
+		
+			<li><a href="/categories/WordPress/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/服务器/" title="服务器">服务器<sup>13</sup></a></li>
+		
+			<li><a href="/categories/拓展/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/solution/服务器/" title="服务器">服务器<sup>3</sup></a></li>
+		
+			<li><a href="/categories/前端优化/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/solution/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/服务器/" title="服务器">服务器<sup>4</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/移动开发/" title="移动开发">移动开发<sup>1</sup></a></li>
+		
+			<li><a href="/categories/移动开发/" title="移动开发">移动开发<sup>3</sup></a></li>
+		
+			<li><a href="/categories/solution/自然/" title="自然">自然<sup>2</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/自然/" title="自然">自然<sup>1</sup></a></li>
+		
+			<li><a href="/categories/自然/" title="自然">自然<sup>17</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/TransactionException/" title="TransactionException">TransactionException<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Varnish/" title="Varnish">Varnish<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 20.00px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a><a href="/tags/closest-method/" style="font-size: 10.00px;">closest method</a><a href="/tags/cookie-free/" style="font-size: 10.00px;">cookie free</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+  </body>
+</html>

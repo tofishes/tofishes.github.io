@@ -1,0 +1,564 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Yeoman-基于node.js的前端项目工作流工具集合 | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="ToFishes">
+    
+    <meta name="description" content="看Yeoman官网描述：Yeoman是一个工作流，一个包含了各种工具及最佳实践的集合。
+以下内容源自： http://www.36ria.com/6144
+今天明河介绍一个比较新的前端工具：Yeoman。
+什么是Yeoman
+很难使用一句话来表述Yeoman用途，因为Yeoman其实是三个工具的集合：YO、GRUNT、BOWER，所以需要先解释下这三个工具的用途。
+
+
+YO：Yeoman核心工具，项目工程依赖目录和文件生成工具，项目生产环境和编译环境生成工具
+GRUNT：grunt去年很火，前端构建工具，jquery就是使用这个工具打包的
+BOWER：Web开发的包管理器，概念上类似npm，npm专注于nodeJs模块，而bower专注于CSS、JavaScript、图像等前端相关内容的管理">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2013/12/19/yeoman-its-a-workflow-a-collection-of-tools-and-best-practices/" title="Yeoman-基于node.js的前端项目工作流工具集合" itemprop="url">Yeoman-基于node.js的前端项目工作流工具集合</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2013-12-19T12:18:43.000Z" itemprop="datePublished">12月 19 2013</time>
+    更新日期:<time datetime="2014-10-15T10:58:07.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是Yeoman"><span class="toc-number">1.</span> <span class="toc-text">什么是Yeoman</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么场景下使用yeoman？"><span class="toc-number">2.</span> <span class="toc-text">什么场景下使用yeoman？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#yeoman的简单使用"><span class="toc-number">3.</span> <span class="toc-text">yeoman的简单使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#安装yeoman"><span class="toc-number">3.1.</span> <span class="toc-text">安装yeoman</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生成工程目录"><span class="toc-number">3.2.</span> <span class="toc-text">生成工程目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#起个Node服务器"><span class="toc-number">3.3.</span> <span class="toc-text">起个Node服务器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#回归测试用例"><span class="toc-number">3.4.</span> <span class="toc-text">回归测试用例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工程中引入其他类库"><span class="toc-number">3.5.</span> <span class="toc-text">工程中引入其他类库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Yeoman特性总结"><span class="toc-number">4.</span> <span class="toc-text">Yeoman特性总结</span></a></li></ol>
+		</div>
+		
+		<p>看Yeoman官网描述：<a href="http://yeoman.io/" title="Yeoman" target="_blank" rel="external">Yeoman</a>是一个工作流，一个包含了各种工具及最佳实践的集合。</p>
+<p>以下内容源自： <a href="http://www.36ria.com/6144" target="_blank" rel="external">http://www.36ria.com/6144</a></p>
+<p>今天明河介绍一个比较新的前端工具：<a href="http://yeoman.io/" target="_blank" rel="external">Yeoman</a>。</p>
+<h2 id="什么是Yeoman">什么是Yeoman</h2>
+<p>很难使用一句话来表述Yeoman用途，因为Yeoman其实是三个工具的集合：<a href="http://yeoman.io/" target="_blank" rel="external">YO</a>、<a href="https://github.com/gruntjs/grunt" target="_blank" rel="external">GRUNT</a>、<a href="http://bower.io/" target="_blank" rel="external">BOWER</a>，所以需要先解释下这三个工具的用途。</p>
+<p><img src="https://raw.github.com/yeoman/yeoman.io/gh-pages/media/toolset.png" alt=""></p>
+<ul>
+<li><a href="http://yeoman.io/" target="_blank" rel="external">YO</a>：Yeoman核心工具，项目工程依赖目录和文件生成工具，项目生产环境和编译环境生成工具</li>
+<li><a href="https://github.com/gruntjs/grunt" target="_blank" rel="external">GRUNT</a>：grunt去年很火，前端构建工具，jquery就是使用这个工具打包的</li>
+<li><a href="http://bower.io/" target="_blank" rel="external">BOWER</a>：Web开发的包管理器，概念上类似npm，npm专注于nodeJs模块，而bower专注于CSS、JavaScript、图像等前端相关内容的管理<a id="more"></a><br>infoq的有篇yeoman的介绍文章：<a href="http://www.infoq.com/cn/news/2012/09/yeoman" target="_blank" rel="external">《Yeoman：构建漂亮Web应用的工具和框架》</a>，标题对yeoman的定义不算准确。</li>
+</ul>
+<p><strong>yeoman定义了一套用于提高前端工程师效率的规范工作流工具。</strong></p>
+<p>效率和规范是yeoman的核心诉求，后面明河讲解yeoman使用场景时会说到，yeoman是如何提高你的项目效率。</p>
+<p>打个比喻：如果前端项目是工厂的产品的话，yeoman就像工厂的流水线，标准化、傻瓜化、批量化产品生产，生产过程乏味了，但效率提高了。</p>
+<h2 id="什么场景下使用yeoman？">什么场景下使用yeoman？</h2>
+<p>假设，明河接到一个项目：火车票订票系统，代码层面，前几天思考的问题如下：</p>
+<p>1.项目目录该如何规划？</p>
+<p>2.使用什么类库来支撑系统开发？</p>
+<p>3.生产环境如何搭建（比如很多前端的生产环境是基于php，也有基于NodeJs）</p>
+<p>4.编译环境如何搭建（编译环境其实应该归到生产环境中，但前端很多人使用coffeescript/less/sass等，所以需要编译环境）</p>
+<p>5.单元测试环境如何搭建？</p>
+<p>6.调试环境如何搭建（本地代理远程assets等）</p>
+<p>7.开发完毕后打包部署如何处理？</p>
+<p>我相信多数前端在项目coding前肯定都会碰上类似的问题，你是花半天、1天、2天解决？</p>
+<p>假如你是多人合作呢？问题更严重，如何保持团队环境和代码规范的一致性？教团队成员装依赖？配置工具？大费口舌告之规范？</p>
+<p>没做一个项目，你都会遇到相同问题，再重复一遍？</p>
+<p>亲累不？</p>
+<p><strong>用yeoman！1行命名，15秒进入coding状态！</strong></p>
+<p>想尝试下吗？往下看~</p>
+<h2 id="yeoman的简单使用">yeoman的简单使用</h2>
+<h3 id="安装yeoman">安装yeoman</h3>
+<p>需要用到<a href="http://www.infoq.com/cn/articles/nodejs-npm-install-config" target="_blank" rel="external">npm</a>，安装 yo、grunt-cli、bower</p>
+<pre class="brush: javascript;">
+
+ npm install -g yo grunt-cli bower</pre>
+安装成功后，会看到下面的提示：
+
+![](http://s1.36ria.com/201304/4922/35120_o.png)
+
+留意yo的二个模块：generator-mocha和generator-webapp，**generator-**前缀的模块表明它是一种工程模版，比如你的web工程是基于[bootstrap](http://www.bootcss.com/)框架，那么可以安装[generator-bootstrap](https://github.com/yeoman/generator-bootstrap)，使用yo来自动生成该目录（会带上bootstrap的源码）。
+<pre class="brush: javascript;">npm install -g generator-bootstrap</pre>
+
+<h3 id="生成工程目录">生成工程目录</h3>
+<p>创建（或打开）你的工程根目录，比如demo-app，然后运行命令：</p>
+<p><pre class="brush: javascript;">yo webapp</pre><br>webapp是yo自带的工程模版带有：<a href="http://html5boilerplate.com/" target="_blank" rel="external">html5 Boilerplate</a>、jquery、<a href="http://modernizr.com/" target="_blank" rel="external">Modernizr</a>、<a href="http://www.bootcss.com/" target="_blank" rel="external">Bootstrap</a>、<a href="http://requirejs.org/" target="_blank" rel="external">RequireJS</a>等框架。</p>
+<p><img src="http://s1.36ria.com/201304/4922/35121_o.png" alt=""></p>
+<p>yeoman有个非常人性化的功能，带有问答功能，比如上图中，yeoman询问你，你的工程需要Bootstrap(sass)框架吗？</p>
+<p>需要输入“n”，因为需要sass运行环境（ruby）window下麻烦，先不引入。</p>
+<p>yeoman还会询问你，你的工程需要RequireJS模块加载框架吗？</p>
+<p>我们继续输入“Y”，OK，工程生成完毕，可以看下目录情况。</p>
+<p><img src="http://s2.36ria.com/201304/4922/35123_o.png" alt=""></p>
+<p><img src="http://s3.36ria.com/201304/4922/35124_o.png" alt=""></p>
+<p>一切如此简单，你不需要再手动创建工程目录，也不需要再费事的google搜索下需要的框架，然后再下载，解压到工程目录。</p>
+<p>使用一行命令，然后就立马进入coding状态！这就是yeoman提高前端工作的地方。</p>
+<p>还没完，yeoman如果只能帮你创建工程目录，还不足以给我们惊喜。</p>
+<p>如果我的工程中需要sass/less/coffscript编译呢？</p>
+<p>我的工程中有ajax请求，需要放在apache的目录下？</p>
+<p>我写了单元测试，如何回归？</p>
+<p>…..</p>
+<p>这些问题，在yeoman中都不是问题，因为已经集成在内了。</p>
+<h3 id="起个Node服务器">起个Node服务器</h3>
+<p>yeoman内置了Node服务器服务，而且会监听工程目录下的文件的改变，一旦文件发生改变会重新编译文件（sass/less/coffscript）。</p>
+<p>下面轮到<strong>grunt</strong>上场，在工程目录下，运行命令：</p>
+<p><pre class="brush: javascript;">grunt server</pre><br><img src="http://s1.36ria.com/201304/4922/35148_o.png" alt=""></p>
+<p>启动成功后会自动打开本地浏览器，默认地址为<strong><a href="http://localhost:9000/" target="_blank" rel="external">http://localhost:9000/</a></strong>，9000端口号，可能被占用，这时候打开gruntfile.js文件（grunt的任务配置文件），找到：</p>
+<p><pre class="brush: javascript;">            options: {<br>                port: 9000,<br>                // change this to ‘0.0.0.0’ to access the server from outside<br>                hostname: ‘localhost’<br>            }</pre><br>修改下<strong>port</strong>，即可。</p>
+<h3 id="回归测试用例">回归测试用例</h3>
+<p>Yeoman默认使用<a href="http://visionmedia.github.io/mocha/" target="_blank" rel="external">mocha</a>作为测试框架，是在 PhantomJS环境下进行回归测试。</p>
+<p>运行如下命令：</p>
+<p><pre class="brush: javascript;">grunt test</pre><br><img src="http://s2.36ria.com/201304/4922/35149_o.png" alt=""></p>
+<p>启动成功，并回归成功，你可以在test目录下找到测试代码：</p>
+<p><img src="http://s3.36ria.com/201304/4922/35150_o.png" alt=""></p>
+<h3 id="工程中引入其他类库">工程中引入其他类库</h3>
+<p>比如，我想要在工程中引入 <a href="http://underscorejs.org/" target="_blank" rel="external">underscore</a></p>
+<p><pre class="brush: javascript;">bower install underscore<br>grunt</pre><br>bower上场了，使用bower从在线包管理器中拉取underscore代码</p>
+<h2 id="Yeoman特性总结">Yeoman特性总结</h2>
+<p>偷下懒，抄下其他人的翻译：</p>
+<ul>
+<li>快速创建骨架应用程序——使用可自定义的模板（例如：HTML5、Boilerplate、Twitter Bootstrap等）、AMD（通过RequireJS）以及其他工具轻松地创建新项目的骨架。</li>
+<li>自动编译CoffeeScrip和Compass——在做出变更的时候，Yeoman的LiveReload监视进程会自动编译源文件，并刷新浏览器，而不需要你手动执行。</li>
+<li>自动完善你的脚本——所有脚本都会自动针对jshint（软件开发中的静态代码分析工具，用于检查JavaScript源代码是否符合编码规范）运行，从而确保它们遵循语言的最佳实践。</li>
+<li>内建的预览服务器——你不需要启动自己的HTTP服务器。内建的服务器用一条命令就可以启动</li>
+<li>非常棒的图像优化——Yeoman使用OptPNG和JPEGTran对所有图像做了优化，从而你的用户可以花费更少时间下载资源，有更多时间来使用你的应用程序。</li>
+<li>生成AppCache清单——Yeoman会为你生成应用程序缓存的清单，你只需要构建项目就好</li>
+<li>杀手级”的构建过程——你所做的工作不仅被精简到最少，让你更加专注，而且Yeoman还会优化所有图像文件和HTML文件、编译你的CoffeeScript和Compass文件、生成应用程序的缓存清单，如果你使用AMD，那么它还会通过r.js来传递这些模块。这会为你节省大量工作</li>
+<li>集成的包管理——Yeoman让你可以通过命令行（例如，yeoman搜索查询）轻松地查找新的包，安装并保持更新，而不需要你打开浏览器</li>
+<li>对ES6模块语法的支持——你可以使用最新的ECMAScript 6模块语法来编写模块。这还是一种实验性的特性，它会被转换成eS5，从而你可以在所有流行的浏览器中使用编写的代码</li>
+<li>PhantomJS单元测试——你可以通过PhantomJS轻松地运行单元测试。当你创建新的应用程序的时候，它还会为你自动创建测试内容的骨架</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/grunt/">grunt</a><a href="/tags/workflow/">workflow</a><a href="/tags/yeoman/">yeoman</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/前端优化/">前端优化</a>►<a class="article-category-link" href="/categories/前端优化/拓展/">拓展</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2013/12/19/yeoman-its-a-workflow-a-collection-of-tools-and-best-practices/" data-title="Yeoman-基于node.js的前端项目工作流工具集合 | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2013/12/30/websocket-e5-85-a5-e9-97-a8-e4-bd-bf-e7-94-a8/" title="WebSocket入门使用">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  WebSocket入门使用</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2013/12/04/weinre-is-a-mobile-develop-debug-tool/"  title="移动端开发的调试工具Weinre">
+ <strong>NEXT:</strong><br/> 
+ <span>移动端开发的调试工具Weinre
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是Yeoman"><span class="toc-number">1.</span> <span class="toc-text">什么是Yeoman</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么场景下使用yeoman？"><span class="toc-number">2.</span> <span class="toc-text">什么场景下使用yeoman？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#yeoman的简单使用"><span class="toc-number">3.</span> <span class="toc-text">yeoman的简单使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#安装yeoman"><span class="toc-number">3.1.</span> <span class="toc-text">安装yeoman</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生成工程目录"><span class="toc-number">3.2.</span> <span class="toc-text">生成工程目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#起个Node服务器"><span class="toc-number">3.3.</span> <span class="toc-text">起个Node服务器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#回归测试用例"><span class="toc-number">3.4.</span> <span class="toc-text">回归测试用例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工程中引入其他类库"><span class="toc-number">3.5.</span> <span class="toc-text">工程中引入其他类库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Yeoman特性总结"><span class="toc-number">4.</span> <span class="toc-text">Yeoman特性总结</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		<a href="https://github.com/tofishes" target="_blank" title="github"></a>
+		
+		
+		
+	</div>
+</div>
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/JavaScript/" title="JavaScript">JavaScript<sup>2</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/" title="JavaScript">JavaScript<sup>41</sup></a></li>
+		
+			<li><a href="/categories/code/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Books/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/solution/WordPress/" title="WordPress">WordPress<sup>3</sup></a></li>
+		
+			<li><a href="/categories/WordPress/" title="WordPress">WordPress<sup>2</sup></a></li>
+		
+			<li><a href="/categories/code/" title="code">code<sup>7</sup></a></li>
+		
+			<li><a href="/categories/database/" title="database">database<sup>5</sup></a></li>
+		
+			<li><a href="/categories/code/html-amp-css/" title="html&amp;amp;css">html&amp;amp;css<sup>1</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/" title="html&amp;amp;css">html&amp;amp;css<sup>23</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/jQuery/" title="jQuery">jQuery<sup>2</sup></a></li>
+		
+			<li><a href="/categories/code/jQuery/" title="jQuery">jQuery<sup>1</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/" title="jQuery">jQuery<sup>2</sup></a></li>
+		
+			<li><a href="/categories/jQuery/" title="jQuery">jQuery<sup>17</sup></a></li>
+		
+			<li><a href="/categories/java/" title="java">java<sup>11</sup></a></li>
+		
+			<li><a href="/categories/linux/" title="linux">linux<sup>20</sup></a></li>
+		
+			<li><a href="/categories/python/" title="python">python<sup>1</sup></a></li>
+		
+			<li><a href="/categories/share/" title="share">share<sup>1</sup></a></li>
+		
+			<li><a href="/categories/soft/" title="soft">soft<sup>4</sup></a></li>
+		
+			<li><a href="/categories/code/solution/" title="solution">solution<sup>1</sup></a></li>
+		
+			<li><a href="/categories/jQuery/solution/" title="solution">solution<sup>5</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/solution/" title="solution">solution<sup>25</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/database/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/solution/" title="solution">solution<sup>1</sup></a></li>
+		
+			<li><a href="/categories/java/solution/" title="solution">solution<sup>3</sup></a></li>
+		
+			<li><a href="/categories/linux/solution/" title="solution">solution<sup>4</sup></a></li>
+		
+			<li><a href="/categories/solution/thinking/" title="thinking">thinking<sup>5</sup></a></li>
+		
+			<li><a href="/categories/thinking/" title="thinking">thinking<sup>10</sup></a></li>
+		
+			<li><a href="/categories/vim/" title="vim">vim<sup>9</sup></a></li>
+		
+			<li><a href="/categories/thinking/前端优化/" title="前端优化">前端优化<sup>1</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/前端优化/" title="前端优化">前端优化<sup>1</sup></a></li>
+		
+			<li><a href="/categories/前端优化/" title="前端优化">前端优化<sup>8</sup></a></li>
+		
+			<li><a href="/categories/拓展/" title="拓展">拓展<sup>22</sup></a></li>
+		
+			<li><a href="/categories/java/拓展/" title="拓展">拓展<sup>2</sup></a></li>
+		
+			<li><a href="/categories/solution/拓展/" title="拓展">拓展<sup>4</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/拓展/" title="拓展">拓展<sup>2</sup></a></li>
+		
+			<li><a href="/categories/前端优化/拓展/" title="拓展">拓展<sup>1</sup></a></li>
+		
+			<li><a href="/categories/WordPress/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/服务器/" title="服务器">服务器<sup>13</sup></a></li>
+		
+			<li><a href="/categories/拓展/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/solution/服务器/" title="服务器">服务器<sup>3</sup></a></li>
+		
+			<li><a href="/categories/前端优化/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/solution/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/服务器/" title="服务器">服务器<sup>4</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/移动开发/" title="移动开发">移动开发<sup>1</sup></a></li>
+		
+			<li><a href="/categories/移动开发/" title="移动开发">移动开发<sup>3</sup></a></li>
+		
+			<li><a href="/categories/solution/自然/" title="自然">自然<sup>2</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/自然/" title="自然">自然<sup>1</sup></a></li>
+		
+			<li><a href="/categories/自然/" title="自然">自然<sup>17</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/TransactionException/" title="TransactionException">TransactionException<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Varnish/" title="Varnish">Varnish<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 20.00px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a><a href="/tags/closest-method/" style="font-size: 10.00px;">closest method</a><a href="/tags/cookie-free/" style="font-size: 10.00px;">cookie free</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+  </body>
+</html>

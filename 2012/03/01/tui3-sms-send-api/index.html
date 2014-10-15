@@ -1,0 +1,814 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>用java封装一个推立方的发送短信API | 听雨~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="ToFishes">
+    
+    <meta name="description" content="推立方发送短信，提供的是一个http uri地址，可以使用get或post方式提交短信内容。
+具体的可以去看推立方的文档。PS一句，推立方发短信蛮贵的。。。1毛一条。
+其中用到第三方JSON解析包FastJSON，可以google得之。其余的上代码。">
+    
+    
+    
+    
+    <link rel="alternate" href="atom.xml" title="听雨~" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+     
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="听雨~">听雨~</a></h1>
+				<a class="blog-motto">昨夜卧听风吹雨，不若相忘于江湖。</a>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+                                            <form class="search" action=http://search.baidu.com/cse/search target="_blank">
+                                            <label>Search</label>
+                                        <input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+					
+					</li>
+				</ul>
+                            </nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2012/03/01/tui3-sms-send-api/" title="用java封装一个推立方的发送短信API" itemprop="url">用java封装一个推立方的发送短信API</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://umitime.com" title="[object Object]">[object Object]</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2012-02-29T18:41:13.000Z" itemprop="datePublished">3月 1 2012</time>
+    更新日期:<time datetime="2014-10-15T10:58:07.000Z" itemprop="dateModified">10月 15 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#短信最小剩余条数，小于30条则发送短信通知充值"><span class="toc-number">1.</span> <span class="toc-text">短信最小剩余条数，小于30条则发送短信通知充值</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用的产品类型_1:“推信”;_2:“推信DIY”"><span class="toc-number">2.</span> <span class="toc-text">使用的产品类型 1:“推信”; 2:“推信DIY”</span></a></li></ol>
+		</div>
+		
+		<p>推立方发送短信，提供的是一个http uri地址，可以使用get或post方式提交短信内容。</p>
+<p>具体的可以去看推立方的文档。PS一句，推立方发短信蛮贵的。。。1毛一条。</p>
+<p>其中用到第三方JSON解析包FastJSON，可以google得之。其余的上代码。</p>
+<p><a id="more"></a></p>
+<p><pre class="brush:java">package com.cssor.util;</pre></p>
+<p>import java.io.BufferedReader;<br>import java.io.DataOutputStream;<br>import java.io.IOException;<br>import java.io.InputStreamReader;<br>import java.net.HttpURLConnection;<br>import java.net.URL;<br>import java.net.URLEncoder;<br>import java.text.SimpleDateFormat;<br>import java.util.Arrays;<br>import java.util.Date;</p>
+<p>import com.alibaba.fastjson.JSON;<br>import com.alibaba.fastjson.JSONObject;</p>
+<p>public class SMSUtil {</p>
+<p>/<em>    调用地址：<br>    UTF8：<a href="http://www.tui3.com/api/send/?k=发送密钥&amp;r=执行结果格式&amp;p=短信产品id&amp;t=接收手机号&amp;c=发送内容" target="_blank" rel="external">http://www.tui3.com/api/send/?k=发送密钥&amp;r=执行结果格式&amp;p=短信产品id&amp;t=接收手机号&amp;c=发送内容</a><br>    GBK：<a href="http://www.tui3.com/api/send/?k=发送密钥&amp;r=执行结果格式&amp;p=短信产品id&amp;t=接收手机号&amp;cn=发送内容" target="_blank" rel="external">http://www.tui3.com/api/send/?k=发送密钥&amp;r=执行结果格式&amp;p=短信产品id&amp;t=接收手机号&amp;cn=发送内容</a><br>    参数说明：<br>        k:  32位随机值，由系统自动产生，该值请到产品配置中获取。该值请注意安全保管，勿泄露。<br>        p: 1:“推信”; 2:“推信DIY”。<br>        r: 调用后返回的结果格式。json(默认)  xml<br>        t:接收手机列表，多个手机号码请用,分隔(最多支持100个手机号)<br>        c: 发送内容（utf8格式编码） cn: 发送内容(gbk格式编码)
+</em>/<br>    private static final String API_KEY = “d08c3<strong><strong><strong><strong><em>*</em></strong></strong></strong></strong>38b374”;<br>    private static final String PRODUCT_TYPE = “1”; /<em>1:“推信”; 2:“推信DIY”。</em>/<br>    private static final String RESULT_FORMAT = “json”;</p>
+<pre><code><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String API_URL = <span class="string">"http://www.tui3.com/api/send/"</span>;
+
+<span class="javadoc">/**
+ * 向一个手机号码发送短信
+ *<span class="javadoctag"> @param</span> mobile 手机号码
+ *<span class="javadoctag"> @param</span> content 短信内容
+ */</span>
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sendSMS</span>(String mobile, String content) {
+    String[] mobiles = {mobile};
+    sendSMS(mobiles, content);
+}
+
+<span class="javadoc">/**
+ * 向多个手机发送短信，群发。
+ *<span class="javadoctag"> @param</span> mobiles 手机号码数组
+ *<span class="javadoctag"> @param</span> content 短信内容
+ */</span>
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sendSMS</span>(String[] mobiles, String content) {
+    <span class="comment">/*推立方最多支持100个手机号*/</span>
+    <span class="keyword">if</span>(mobiles.length &amp;gt; <span class="number">99</span>) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"推立方最多支持100个手机号，请检查手机号是否过多。"</span>);
+    }
+
+    <span class="keyword">try</span> {
+        URL url = <span class="keyword">new</span> URL(API_URL);
+
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        HttpURLConnection.setFollowRedirects(<span class="keyword">true</span>);
+
+        connection.setDoInput(<span class="keyword">true</span>);
+        connection.setDoOutput(<span class="keyword">true</span>);
+
+        connection.setRequestMethod(<span class="string">"POST"</span>);
+        connection.setRequestProperty(<span class="string">"Content-Type"</span>, <span class="string">"application/x-www-form-urlencoded; charset=utf-8"</span>);
+
+        content = URLEncoder.encode(content, <span class="string">"utf-8"</span>);
+        String query = <span class="string">"k="</span> + API_KEY + <span class="string">"&amp;amp;r="</span> + RESULT_FORMAT + <span class="string">"&amp;amp;p="</span> + PRODUCT_TYPE
+                + <span class="string">"&amp;amp;c="</span> + content + <span class="string">"&amp;amp;t="</span> + Arrays.toString(mobiles).replaceAll(<span class="string">"[\\[\\]\\s]"</span>, <span class="string">""</span>);
+
+        DataOutputStream output = <span class="keyword">new</span> DataOutputStream(
+                connection.getOutputStream());
+        output.writeBytes(query);
+
+        <span class="keyword">int</span> resp_code = connection.getResponseCode();
+
+        <span class="keyword">if</span>(resp_code != <span class="number">200</span>) {
+            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"推立方服务器返回码不是200 ok，请求响应错误！"</span>);
+        }
+
+        BufferedReader reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(connection.getInputStream()));
+
+        String result = <span class="string">""</span>, r;
+
+        <span class="keyword">while</span> ((r = reader.readLine()) != <span class="keyword">null</span>) {
+            result += r;
+        }
+        reader.close();
+
+        JSONObject resultJSON = JSON.parseObject(result);
+        <span class="keyword">if</span>(resultJSON.getIntValue(<span class="string">"err_code"</span>) != <span class="number">0</span>) {
+            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(resultJSON.getString(<span class="string">"err_msg"</span>));
+        }
+    } <span class="keyword">catch</span> (IOException e) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"网路IO错误。"</span>, e);
+    }
+}
+
+<span class="javadoc">/**
+ *<span class="javadoctag"> @param</span> args
+ */</span>
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(String[] args) {
+    Date date = <span class="keyword">new</span> Date();
+    SimpleDateFormat dateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"MM-dd HH:mm:ss"</span>);
+
+    String[] mobiles = {<span class="string">"158********"</span>,<span class="string">"135********"</span>};
+    String content = <span class="string">"t3test 这个短信同时发给多个人，编号002 - cssor.com - 发送时间："</span> + dateFormat.format(date);
+
+    SMSUtil.sendSMS(mobiles, content);
+}
+</code></pre><p>}<br>代码进化版，当然有些地方还是写死上去的，不够灵活，不过满足当前业务为重，新增短信余额提醒功能，并把短信发送作为新线程执行，即使发短信过程产生错误也不影响主线程功能：</p>
+<p><pre class="brush:js">package com.cssor.util;</pre></p>
+<p>import java.io.BufferedReader;<br>import java.io.DataOutputStream;<br>import java.io.IOException;<br>import java.io.InputStreamReader;<br>import java.net.HttpURLConnection;<br>import java.net.URL;<br>import java.net.URLEncoder;<br>import java.text.SimpleDateFormat;<br>import java.util.Arrays;<br>import java.util.Date;<br>import java.util.HashMap;<br>import java.util.Map;<br>import java.util.PropertyResourceBundle;<br>import java.util.ResourceBundle;</p>
+<p>import com.alibaba.fastjson.JSON;<br>import com.alibaba.fastjson.JSONObject;</p>
+<p>public class SMSUtil {</p>
+<p>//    调用地址：<br>//    UTF8：<a href="http://www.tui3.com/api/send/?k=发送密钥&amp;r=执行结果格式&amp;p=短信产品id&amp;t=接收手机号&amp;c=发送内容" target="_blank" rel="external">http://www.tui3.com/api/send/?k=发送密钥&amp;r=执行结果格式&amp;p=短信产品id&amp;t=接收手机号&amp;c=发送内容</a><br>//    GBK：<a href="http://www.tui3.com/api/send/?k=发送密钥&amp;r=执行结果格式&amp;p=短信产品id&amp;t=接收手机号&amp;cn=发送内容" target="_blank" rel="external">http://www.tui3.com/api/send/?k=发送密钥&amp;r=执行结果格式&amp;p=短信产品id&amp;t=接收手机号&amp;cn=发送内容</a><br>    /<em><br>        参数说明：<br>        k:  32位随机值，由系统自动产生，该值请到产品配置中获取。该值请注意安全保管，勿泄露。<br>         p: 1:“推信”; 2:“推信DIY”。<br>         r: 调用后返回的结果格式。json(默认)  xml<br>         t:接收手机列表，多个手机号码请用,分隔(最多支持100个手机号)<br>        c: 发送内容（utf8格式编码） cn: 发送内容(gbk格式编码)
+     </em>/<br>    private static final String API_URL = “<a href="http://www.tui3.com/api/send/" target="_blank" rel="external">http://www.tui3.com/api/send/</a>“;<br>    private static final String QUERY_URL = “<a href="http://www.tui3.com/api/query/" target="_blank" rel="external">http://www.tui3.com/api/query/</a>“;</p>
+<pre><code><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String API_KEY = <span class="string">"d08c3********************"</span>;
+<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String RESULT_FORMAT = <span class="string">"json"</span>;
+<span class="keyword">private</span> <span class="keyword">static</span> String PRODUCT_TYPE; <span class="comment">//1:“推信”; 2:“推信DIY”。</span>
+
+<span class="keyword">private</span> <span class="keyword">static</span> String MOBILE_REMIND;
+<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> MIN_BALANCE;
+
+<span class="keyword">static</span> {
+    <span class="keyword">try</span> {
+        ResourceBundle bundle = PropertyResourceBundle.getBundle(<span class="string">"smsconfig"</span>);
+        MOBILE_REMIND = bundle.getString(<span class="string">"mobile_remind"</span>);
+        MIN_BALANCE = Integer.valueOf(bundle.getString(<span class="string">"min_balance"</span>));
+        PRODUCT_TYPE = bundle.getString(<span class="string">"product_type"</span>);    
+
+    } <span class="keyword">catch</span> (Exception e) {
+        e.printStackTrace();
+        MOBILE_REMIND = <span class="string">"135********"</span>;
+        MIN_BALANCE = <span class="number">30</span>;
+
+        PRODUCT_TYPE = <span class="string">"1"</span>; <span class="comment">//1:“推信”; 2:“推信DIY”。</span>
+    }
+}
+
+<span class="javadoc">/**
+ * 向一个手机号码发送短信
+ *<span class="javadoctag"> @param</span> mobile 手机号码
+ *<span class="javadoctag"> @param</span> content 短信内容
+ */</span>
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sendSMS</span>(String mobile, String content) {
+    String[] mobiles = {mobile};
+    sendSMS(mobiles, content);
+}
+
+<span class="javadoc">/**
+ * 向多个手机发送短信，群发。
+ *<span class="javadoctag"> @param</span> mobiles 手机号码数组
+ *<span class="javadoctag"> @param</span> content 短信内容
+ */</span>
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sendSMS</span>(String[] mobiles, String content) {
+    ExecutorPool.getInstance().getExecutorService().execute(<span class="keyword">new</span> SMSRunner(mobiles, content));
+}
+
+<span class="javadoc">/**
+ * 发送短信核心方法，同时增加了短信余额预警通知
+ *<span class="javadoctag"> @param</span> mobiles 手机号数组
+ *<span class="javadoctag"> @param</span> content  短信内容
+ */</span>
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">coreSendSMS</span>(String[] mobiles, String content) {
+    <span class="comment">//推立方最多支持100个手机号</span>
+    <span class="keyword">if</span>(mobiles.length &amp;gt; <span class="number">99</span>) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"推立方最多支持100个手机号，请检查手机号是否过多。"</span>);
+    }
+    <span class="keyword">if</span>(mobiles.length == <span class="number">0</span>) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"至少需要一个手机号码。"</span>);
+    }
+
+    <span class="keyword">try</span> {
+        content = URLEncoder.encode(content, <span class="string">"utf-8"</span>);
+
+        Map&amp;lt;String, String&amp;gt; params = <span class="keyword">new</span> HashMap&amp;lt;String, String&amp;gt;();
+        params.put(<span class="string">"k"</span>, API_KEY);
+        params.put(<span class="string">"r"</span>, RESULT_FORMAT);
+        params.put(<span class="string">"p"</span>, PRODUCT_TYPE);
+        params.put(<span class="string">"c"</span>, content);
+        params.put(<span class="string">"t"</span>, Arrays.toString(mobiles).replaceAll(<span class="string">"[\\[\\]\\s]"</span>, <span class="string">""</span>));
+
+        Response response = SMSUtil.postRequset(API_URL, params);
+
+        <span class="keyword">if</span>(response.getStatus() != <span class="number">200</span>) {
+            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"推立方服务器返回码不是200 ok，请求响应错误！"</span>);
+        }
+
+        JSONObject resultJSON = JSON.parseObject(response.getContent());
+        <span class="keyword">if</span>(resultJSON.getIntValue(<span class="string">"err_code"</span>) != <span class="number">0</span>) {
+            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(resultJSON.getString(<span class="string">"err_msg"</span>));
+        }
+
+    } <span class="keyword">catch</span> (IOException e) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"网路IO错误。"</span>, e);
+    }
+}
+
+<span class="javadoc">/**
+ * 短信余额将完预警通知
+ */</span>
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">notifyBalance</span>() {
+    <span class="keyword">int</span> balance = queryBalance();
+    <span class="keyword">if</span>(balance != -<span class="number">1</span> &amp;amp;&amp;amp; balance &amp;lt;= MIN_BALANCE) {
+        <span class="comment">//短信内容修改，注意要符合推立方备案格式</span>
+        String tip = <span class="string">"推立方短信可发送仅剩余"</span> + balance + <span class="string">"条，请尽快充值！"</span>;
+        String[] mobiles = {MOBILE_REMIND};
+        SMSUtil.coreSendSMS(mobiles, tip);
+    }
+}
+
+<span class="javadoc">/**
+ * 短信余额查询
+ *<span class="javadoctag"> @return</span>
+ */</span>
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">queryBalance</span>() {
+    Map&amp;lt;String, String&amp;gt; params = <span class="keyword">new</span> HashMap&amp;lt;String, String&amp;gt;();
+    params.put(<span class="string">"k"</span>, API_KEY);
+    params.put(<span class="string">"r"</span>, RESULT_FORMAT);
+
+    <span class="keyword">try</span> {
+        Response response = SMSUtil.postRequset(QUERY_URL, params);
+
+        JSONObject resultJSON = JSON.parseObject(response.getContent());
+
+        <span class="keyword">if</span>(resultJSON.getIntValue(<span class="string">"err_code"</span>) != <span class="number">0</span>) {
+            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(resultJSON.getString(<span class="string">"err_msg"</span>));
+        }
+
+        <span class="keyword">return</span> resultJSON.getIntValue(<span class="string">"count"</span> + PRODUCT_TYPE);
+    } <span class="keyword">catch</span> (Exception e) {
+        e.printStackTrace();
+        <span class="keyword">return</span> -<span class="number">1</span>;
+    }
+}
+
+<span class="javadoc">/**
+ * 简单使用，更复杂可以封装为Response对象
+ *<span class="javadoctag"> @param</span> uri
+ *<span class="javadoctag"> @param</span> params
+ *<span class="javadoctag"> @return</span>
+ *<span class="javadoctag"> @throws</span> IOException
+ */</span>
+<span class="keyword">public</span> <span class="keyword">static</span> Response <span class="title">postRequset</span>(String uri, Map&amp;lt;String, String&amp;gt; params) <span class="keyword">throws</span> IOException {
+
+    URL url = <span class="keyword">new</span> URL(uri);
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    HttpURLConnection.setFollowRedirects(<span class="keyword">true</span>);
+
+    connection.setDoInput(<span class="keyword">true</span>);
+    connection.setDoOutput(<span class="keyword">true</span>);
+
+    connection.setRequestMethod(<span class="string">"POST"</span>);
+    connection.setRequestProperty(<span class="string">"Content-Type"</span>, <span class="string">"application/x-www-form-urlencoded; charset=utf-8"</span>);
+
+    StringBuffer query = <span class="keyword">new</span> StringBuffer(<span class="number">512</span>);
+    <span class="keyword">for</span>(String key : params.keySet()) {
+        query.append(<span class="string">"&amp;amp;"</span> + key + <span class="string">"="</span> + params.get(key));
+    }
+    query.delete(<span class="number">0</span>, <span class="number">1</span>);
+
+    DataOutputStream output = <span class="keyword">new</span> DataOutputStream(
+            connection.getOutputStream());
+    output.writeBytes(query.toString());
+
+    <span class="keyword">int</span> resp_code = connection.getResponseCode();
+
+    <span class="keyword">if</span>(resp_code != <span class="number">200</span>) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"推立方服务器返回码不是200 ok，请求响应错误！"</span>);
+    }
+     <span class="comment">// get ready to read the response from the url</span>
+    BufferedReader reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(connection.getInputStream()));
+
+    String result = <span class="string">""</span>, r;
+
+    <span class="comment">// read in each character until end-of-stream is detected</span>
+    <span class="keyword">while</span> ((r = reader.readLine()) != <span class="keyword">null</span>) {
+        result += r;
+    }
+    reader.close();
+
+    Response response = <span class="keyword">new</span> Response();
+    response.setStatus(resp_code);
+    response.setContent(result);
+
+    <span class="keyword">return</span> response;
+}
+
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Response</span> </span>{
+    <span class="keyword">private</span> <span class="keyword">int</span> status;
+    <span class="keyword">private</span> String content;
+
+    <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getStatus</span>() {
+        <span class="keyword">return</span> status;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setStatus</span>(<span class="keyword">int</span> status) {
+        <span class="keyword">this</span>.status = status;
+    }
+    <span class="keyword">public</span> String <span class="title">getContent</span>() {
+        <span class="keyword">return</span> content;
+    }
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setContent</span>(String content) {
+        <span class="keyword">this</span>.content = content;
+    }
+}
+
+<span class="javadoc">/**
+ *<span class="javadoctag"> @param</span> args
+ */</span>
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(String[] args) {
+    System.err.println(<span class="string">"余额： "</span> + SMSUtil.queryBalance());;
+
+}
+</code></pre><p>}<br>SMSRuner.java</p>
+<p><pre class="brush:js">public class SMSRunner implements Runnable {</pre></p>
+<pre><code><span class="keyword">private</span> String[] mobiles;
+<span class="keyword">private</span> String content;
+<span class="javadoc">/**
+ * 
+ * 开新线程发送短信的构造方法
+ *<span class="javadoctag"> @param</span> mobiles 1个或多个手机号数组
+ *<span class="javadoctag"> @param</span> content  短信内容
+ */</span>
+<span class="keyword">public</span> <span class="title">SMSRunner</span>(String[] mobiles, String content) {
+    <span class="keyword">this</span>.mobiles = mobiles;
+    <span class="keyword">this</span>.content = content;
+}
+
+<span class="annotation">@Override</span>
+<span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span>() {
+    System.err.println(<span class="string">"SMS 短信发送。。。。。。"</span>);
+    SMSUtil.coreSendSMS(<span class="keyword">this</span>.mobiles, <span class="keyword">this</span>.content);
+    SMSUtil.notifyBalance();
+}
+</code></pre><p>}<br>线程池简单实现，一个同事写的，偶直接拿来用了：</p>
+<p><pre class="brush:js">import java.util.concurrent.ExecutorService;<br>import java.util.concurrent.Executors;</pre></p>
+<p>public class ExecutorPool {<br>     private static ExecutorPool instance;<br>     // 连接池大小<br>     private int POOL_SIZE = 2;<br>     private ExecutorService executorService;</p>
+<pre><code> <span class="keyword">private</span> <span class="title">ExecutorPool</span>() {
+         initExecutors();
+ }
+
+ <span class="keyword">public</span> <span class="keyword">static</span> ExecutorPool <span class="title">getInstance</span>() {
+         <span class="keyword">if</span> (instance == <span class="keyword">null</span>) {
+                 instance = <span class="keyword">new</span> ExecutorPool();
+         }
+         <span class="keyword">return</span> instance;
+ }
+
+ <span class="keyword">public</span> ExecutorService <span class="title">getExecutorService</span>() {
+         <span class="keyword">return</span> executorService;
+ }
+
+ <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initExecutors</span>() {
+         <span class="keyword">try</span> {
+                 executorService = Executors.newFixedThreadPool(POOL_SIZE);
+         } <span class="keyword">catch</span> (Exception e) {
+              <span class="comment">//异常处理</span>
+         }
+ }
+</code></pre><p>}<br>需要在class根目录增加一个smsconfig.properties文件，用IDE的话建立在src根目录会自动编译到class目录，内容如下：</p>
+<p><pre class="brush:plain">#被通知需要充值的人的电话<br>mobile_remind=135<strong><em>**</em></strong></pre></p>
+<h1 id="短信最小剩余条数，小于30条则发送短信通知充值">短信最小剩余条数，小于30条则发送短信通知充值</h1>
+<p>min_balance=30</p>
+<h1 id="使用的产品类型_1:“推信”;_2:“推信DIY”">使用的产品类型 1:“推信”; 2:“推信DIY”</h1>
+<p>product_type=1<br>&nbsp;</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/sms-api/">sms api</a><a href="/tags/推立方/">推立方</a><a href="/tags/短信发送/">短信发送</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/code/">code</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://umitime.com/2012/03/01/tui3-sms-send-api/" data-title="用java封装一个推立方的发送短信API | 听雨~" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2012/03/02/the-problems-of-preject/" title="做项目考虑一些全局问题。">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  做项目考虑一些全局问题。</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2012/02/29/be-care-for-the-join-and-in-of-mysql/"  title="慎用mysql的join语句和in子查询语句，普通查询可能是最好的优化。">
+ <strong>NEXT:</strong><br/> 
+ <span>慎用mysql的join语句和in子查询语句，普通查询可能是最好的优化。
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#短信最小剩余条数，小于30条则发送短信通知充值"><span class="toc-number">1.</span> <span class="toc-text">短信最小剩余条数，小于30条则发送短信通知充值</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用的产品类型_1:“推信”;_2:“推信DIY”"><span class="toc-number">2.</span> <span class="toc-text">使用的产品类型 1:“推信”; 2:“推信DIY”</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-logo"></div>		
+	
+	<div class="social-list" class="clearfix">
+		
+		
+		
+		<a href="https://github.com/tofishes" target="_blank" title="github"></a>
+		
+		
+		
+	</div>
+</div>
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Books/" title="Books">Books<sup>4</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/JavaScript/" title="JavaScript">JavaScript<sup>2</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/" title="JavaScript">JavaScript<sup>41</sup></a></li>
+		
+			<li><a href="/categories/code/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Books/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/WordPress/" title="WordPress">WordPress<sup>1</sup></a></li>
+		
+			<li><a href="/categories/solution/WordPress/" title="WordPress">WordPress<sup>3</sup></a></li>
+		
+			<li><a href="/categories/WordPress/" title="WordPress">WordPress<sup>2</sup></a></li>
+		
+			<li><a href="/categories/code/" title="code">code<sup>7</sup></a></li>
+		
+			<li><a href="/categories/database/" title="database">database<sup>5</sup></a></li>
+		
+			<li><a href="/categories/code/html-amp-css/" title="html&amp;amp;css">html&amp;amp;css<sup>1</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/" title="html&amp;amp;css">html&amp;amp;css<sup>23</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/jQuery/" title="jQuery">jQuery<sup>2</sup></a></li>
+		
+			<li><a href="/categories/code/jQuery/" title="jQuery">jQuery<sup>1</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/" title="jQuery">jQuery<sup>2</sup></a></li>
+		
+			<li><a href="/categories/jQuery/" title="jQuery">jQuery<sup>17</sup></a></li>
+		
+			<li><a href="/categories/java/" title="java">java<sup>11</sup></a></li>
+		
+			<li><a href="/categories/linux/" title="linux">linux<sup>20</sup></a></li>
+		
+			<li><a href="/categories/python/" title="python">python<sup>1</sup></a></li>
+		
+			<li><a href="/categories/share/" title="share">share<sup>1</sup></a></li>
+		
+			<li><a href="/categories/soft/" title="soft">soft<sup>4</sup></a></li>
+		
+			<li><a href="/categories/code/solution/" title="solution">solution<sup>1</sup></a></li>
+		
+			<li><a href="/categories/jQuery/solution/" title="solution">solution<sup>5</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/solution/" title="solution">solution<sup>25</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/database/solution/" title="solution">solution<sup>2</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/solution/" title="solution">solution<sup>1</sup></a></li>
+		
+			<li><a href="/categories/java/solution/" title="solution">solution<sup>3</sup></a></li>
+		
+			<li><a href="/categories/linux/solution/" title="solution">solution<sup>4</sup></a></li>
+		
+			<li><a href="/categories/solution/thinking/" title="thinking">thinking<sup>5</sup></a></li>
+		
+			<li><a href="/categories/thinking/" title="thinking">thinking<sup>10</sup></a></li>
+		
+			<li><a href="/categories/vim/" title="vim">vim<sup>9</sup></a></li>
+		
+			<li><a href="/categories/thinking/前端优化/" title="前端优化">前端优化<sup>1</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/前端优化/" title="前端优化">前端优化<sup>1</sup></a></li>
+		
+			<li><a href="/categories/前端优化/" title="前端优化">前端优化<sup>8</sup></a></li>
+		
+			<li><a href="/categories/拓展/" title="拓展">拓展<sup>22</sup></a></li>
+		
+			<li><a href="/categories/java/拓展/" title="拓展">拓展<sup>2</sup></a></li>
+		
+			<li><a href="/categories/solution/拓展/" title="拓展">拓展<sup>4</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/拓展/" title="拓展">拓展<sup>2</sup></a></li>
+		
+			<li><a href="/categories/前端优化/拓展/" title="拓展">拓展<sup>1</sup></a></li>
+		
+			<li><a href="/categories/WordPress/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/服务器/" title="服务器">服务器<sup>13</sup></a></li>
+		
+			<li><a href="/categories/拓展/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/solution/服务器/" title="服务器">服务器<sup>3</sup></a></li>
+		
+			<li><a href="/categories/前端优化/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/solution/服务器/" title="服务器">服务器<sup>1</sup></a></li>
+		
+			<li><a href="/categories/linux/服务器/" title="服务器">服务器<sup>4</sup></a></li>
+		
+			<li><a href="/categories/JavaScript/移动开发/" title="移动开发">移动开发<sup>1</sup></a></li>
+		
+			<li><a href="/categories/移动开发/" title="移动开发">移动开发<sup>3</sup></a></li>
+		
+			<li><a href="/categories/solution/自然/" title="自然">自然<sup>2</sup></a></li>
+		
+			<li><a href="/categories/html-amp-css/jQuery/自然/" title="自然">自然<sup>1</sup></a></li>
+		
+			<li><a href="/categories/自然/" title="自然">自然<sup>17</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/2012/" title="2012">2012<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3cols-layout/" title="3cols layout">3cols layout<sup>1</sup></a></li>
+		
+			<li><a href="/tags/3栏布局/" title="3栏布局">3栏布局<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Balsamiq-Mockups/" title="Balsamiq Mockups">Balsamiq Mockups<sup>1</sup></a></li>
+		
+			<li><a href="/tags/BigPipe/" title="BigPipe">BigPipe<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CORS/" title="CORS">CORS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS3背景透明/" title="CSS3背景透明">CSS3背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/CSS背景透明/" title="CSS背景透明">CSS背景透明<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Callbacks/" title="Callbacks">Callbacks<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Error-configuring-AutoCommit/" title="Error configuring AutoCommit">Error configuring AutoCommit<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Finder/" title="Finder">Finder<sup>1</sup></a></li>
+		
+			<li><a href="/tags/HTML5专业编程/" title="HTML5专业编程">HTML5专业编程<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hadoop/" title="Hadoop">Hadoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hammer-js/" title="Hammer.js">Hammer.js<sup>1</sup></a></li>
+		
+			<li><a href="/tags/JavaScript作用域/" title="JavaScript作用域">JavaScript作用域<sup>1</sup></a></li>
+		
+			<li><a href="/tags/MapReduce/" title="MapReduce">MapReduce<sup>1</sup></a></li>
+		
+			<li><a href="/tags/NERDTree/" title="NERDTree">NERDTree<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RequireJS/" title="RequireJS">RequireJS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/TransactionException/" title="TransactionException">TransactionException<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Varnish/" title="Varnish">Varnish<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://gengbiao.me" target="_blank" title="gengbiao">Coney's Blog</a></li>
+      <li><a href="http://hexo.io" target="_blank" title="Hexo">Hexo</a></li>
+    </ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  
+  <div class="tagcloudlist">
+    <p class="asidetitle">标签云</p>
+    <div class="tagcloudlist clearfix">
+       <a href="/tags/2012/" style="font-size: 10.00px;">2012</a><a href="/tags/3cols-layout/" style="font-size: 10.00px;">3cols layout</a><a href="/tags/3栏布局/" style="font-size: 10.00px;">3栏布局</a><a href="/tags/Balsamiq-Mockups/" style="font-size: 10.00px;">Balsamiq Mockups</a><a href="/tags/BigPipe/" style="font-size: 10.00px;">BigPipe</a><a href="/tags/CORS/" style="font-size: 10.00px;">CORS</a><a href="/tags/CSS3背景透明/" style="font-size: 10.00px;">CSS3背景透明</a><a href="/tags/CSS背景透明/" style="font-size: 10.00px;">CSS背景透明</a><a href="/tags/Callbacks/" style="font-size: 10.00px;">Callbacks</a><a href="/tags/Error-configuring-AutoCommit/" style="font-size: 10.00px;">Error configuring AutoCommit</a><a href="/tags/Finder/" style="font-size: 10.00px;">Finder</a><a href="/tags/HTML5专业编程/" style="font-size: 10.00px;">HTML5专业编程</a><a href="/tags/Hadoop/" style="font-size: 10.00px;">Hadoop</a><a href="/tags/Hammer-js/" style="font-size: 10.00px;">Hammer.js</a><a href="/tags/JavaScript作用域/" style="font-size: 10.00px;">JavaScript作用域</a><a href="/tags/MapReduce/" style="font-size: 10.00px;">MapReduce</a><a href="/tags/NERDTree/" style="font-size: 10.00px;">NERDTree</a><a href="/tags/RequireJS/" style="font-size: 10.00px;">RequireJS</a><a href="/tags/TransactionException/" style="font-size: 10.00px;">TransactionException</a><a href="/tags/Varnish/" style="font-size: 10.00px;">Varnish</a><a href="/tags/Weinre/" style="font-size: 10.00px;">Weinre</a><a href="/tags/WordPress/" style="font-size: 20.00px;">WordPress</a><a href="/tags/WordPress，代码高亮，定制样式，自定义css，自定义js/" style="font-size: 10.00px;">WordPress，代码高亮，定制样式，自定义css，自定义js</a><a href="/tags/XMLHttpRequest/" style="font-size: 10.00px;">XMLHttpRequest</a><a href="/tags/ajax/" style="font-size: 10.00px;">ajax</a><a href="/tags/ajax登录/" style="font-size: 10.00px;">ajax登录</a><a href="/tags/angular-js/" style="font-size: 10.00px;">angular.js</a><a href="/tags/animate/" style="font-size: 10.00px;">animate</a><a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/attribute/" style="font-size: 10.00px;">attribute</a><a href="/tags/backbone/" style="font-size: 10.00px;">backbone</a><a href="/tags/bad-gateway/" style="font-size: 10.00px;">bad gateway</a><a href="/tags/base64/" style="font-size: 10.00px;">base64</a><a href="/tags/bug/" style="font-size: 10.00px;">bug</a><a href="/tags/canvas/" style="font-size: 10.00px;">canvas</a><a href="/tags/canvas-图片/" style="font-size: 10.00px;">canvas 图片</a><a href="/tags/cdn/" style="font-size: 10.00px;">cdn</a><a href="/tags/checked-exception/" style="font-size: 10.00px;">checked exception</a><a href="/tags/closest-method/" style="font-size: 10.00px;">closest method</a><a href="/tags/cookie-free/" style="font-size: 10.00px;">cookie free</a>
+    </div>
+  </div>
+
+
+</aside>
+</div>
+    </div>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+<script>
+     window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["qzone","tsina","weixin","renren","tqq","tieba","douban","sqq","diandian","huaban","youdao","mail","ty","fbook","twi","linkedin","copy","print"],"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"4","bdPos":"right","bdTop":"350"},"image":{"viewList":["weixin","qzone","tsina","renren","douban","tqq"],"viewText":"分享：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["weixin","qzone","tsina","renren","douban","tqq"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+  </body>
+</html>
